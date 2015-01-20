@@ -278,7 +278,7 @@
 					</folderInfo>
 					<fileInfo id="com.freescale.ppc.debug.toolchain.configuration.1615362861.Prefix/MPC5604B_RAM_VLE.prefix" name="MPC5604B_RAM_VLE.prefix" rcbsApplicability="disable" resourcePath="Prefix/MPC5604B_RAM_VLE.prefix" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="Sources/ucos/os_cpu.h|Sources/ivor_branch_table.c|Prefix/MPC5604B_RAM_VLE.prefix|MPC5604B_readme.txt|Project_Settings/Linker_Files/MPC5604B_RAM.lcf|Project_Settings/Startup_Code/MPC5604B_init_ram.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Sources/ivor_branch_table.c|Prefix/MPC5604B_RAM_VLE.prefix|MPC5604B_readme.txt|Project_Settings/Linker_Files/MPC5604B_RAM.lcf|Project_Settings/Startup_Code/MPC5604B_init_ram.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
