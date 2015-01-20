@@ -122,11 +122,6 @@ OSExtIntISR_NotSaveSP:
 OSTickISR:
     prologue
 
-    e_lis   r11,OSIntNesting@ha                     # load OSIntNesting
-    e_lbz   r3, OSIntNesting@l(r11)
-    e_addi  r0, r3, 1
-    e_stb   r0, OSIntNesting@l(r11)                 # OSIntNesting++
-
     e_cmpl16i r0, 1                                 # if (OSIntNesting != 1) ...
     se_bne  OSTickISR_NotSaveSP                     # do not save the stackpointer
 
@@ -135,8 +130,9 @@ OSTickISR:
     e_stw   r1, 0(r11)                              # Save stack pointer in current TCB
 
 OSTickISR_NotSaveSP:
-    e_lis   r4, 0x0800                              # load r4 with TSR[DIS] bit (0x08000000)
-    mtspr   TSR,r4                                  # clear TSR[DIS] bit
+	e_li      r0, 0                                   # load r0 with 0x0000
+    e_lis     r3, INTC_EOIR@ha                        # get the address of the INTC.EOIR Register ...
+    e_stw     r0, INTC_EOIR@l(r3)                     # and clear the INTC.EOIR register
 
     e_bl    BSP_TmrTickISR                          # call TmrTick handler
     e_bl    OSIntExit                               # call to decrement OSIntNesting
