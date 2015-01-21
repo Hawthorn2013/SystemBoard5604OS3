@@ -14,9 +14,11 @@
 
 #include      <stdarg.h>
 
-#include      <cpu.h>
-#include      <app_cfg.h>
-#include      <ucos_ii.h>
-
 #include      "MPC5604B.h"
-#include      <bsp.h>
+#include      "IntcInterrupts.h"
+#include      "Base.h"
+#include      "cpu.h"
+#include      "app_cfg.h"
+#include      "ucos_ii.h"
+#include      "bsp.h"
+#include	  "TestTask.h"

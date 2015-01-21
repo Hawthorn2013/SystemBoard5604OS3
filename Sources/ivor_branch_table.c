@@ -18,6 +18,8 @@ extern "C" {
 
 /* IVOR4 will call this handler */
 extern void INTC_INTCInterruptHandler(void);
+extern void OSExtIntISR(void);
+extern void OSCtxSw(void);
 
 #pragma push
 
@@ -43,7 +45,7 @@ IVOR2trap:  b	IVOR2trap /* Data Storage interrupt handler */
 IVOR3trap:  b	IVOR3trap /* Instruction Storage interrupt handler */
 
 	.align SIXTEEN_BYTES
-IVOR4trap:  b   INTC_INTCInterruptHandler /* External Interrupt interrupt handler */
+IVOR4trap:  b   OSExtIntISR /* External Interrupt interrupt handler */
 
 	.align SIXTEEN_BYTES
 IVOR5trap:  b	IVOR5trap /* Alignment interrupt handler */
@@ -55,7 +57,7 @@ IVOR6trap:  b	IVOR6trap /* Program interrupt handler */
 IVOR7trap:  b	IVOR7trap /* Floating-point unavailable interrupt handler */
 
 .align SIXTEEN_BYTES
-IVOR8trap:  b	IVOR8trap /* System call interrupt handler */
+IVOR8trap:  b	OSCtxSw /* System call interrupt handler */
 
 	.align SIXTEEN_BYTES
 IVOR9trap:  b	IVOR9trap /* AP unavailable interrupt handler */
