@@ -71,10 +71,10 @@ void Init_LQBoard_LED(void)
  	SIU.PCR[14].R = 0x0203; 
 	SIU.PCR[15].R = 0x0203;	/* PA15 */
  	
-	SIU.GPDO[12].R = 1;	/* 1=Ï¨Ãð */
-	SIU.GPDO[13].R = 1;
-	SIU.GPDO[14].R = 1;
-	SIU.GPDO[15].R = 1;
+	SIU.GPDO[12].R = 0;	/* 1=Ï¨Ãð */
+	SIU.GPDO[13].R = 0;
+	SIU.GPDO[14].R = 0;
+	SIU.GPDO[15].R = 0;
 
 }
 
@@ -89,5 +89,13 @@ void Init_Pit(void)
 	PIT.PITMCR.R = 0x00000001;	/* Enable PIT and configure timers to stop in debug modem */
 	PIT.CH[1].LDVAL.R = 800000;	/* 800000==10ms */
 	PIT.CH[1].TCTRL.R = 0x00000003;	/* Enable PIT1 interrupt and make PIT active to count */
-	INTC_InstallINTCInterruptHandler(OSTickISR, 60, 1);	/* PIT 1 interrupt vector with priority 1 */
+	INTC_InstallINTCInterruptHandler(OSTickISR_Out, 60, 1);	/* PIT 1 interrupt vector with priority 1 */
+}
+
+
+void OSTickISR_Out(void)
+{
+    BD3 = ~BD3;
+    OSTickISR();
+    PIT.CH[1].TFLG.B.TIF = 1;   // MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }
