@@ -30,7 +30,7 @@
 #*                                              DEFINES
 #*********************************************************************************************************
 
-    .equ OS_SAVE_CONTEXT_WITH_FPRS,     1           # set to 1 for floating point support; also set in os_cpu.h
+    .equ OS_SAVE_CONTEXT_WITH_FPRS,     0           # set to 1 for floating point support; also set in os_cpu.h
 
     .equ USPRG0,                      256
     .equ TCR,                         340
@@ -211,8 +211,8 @@ prologue:       .macro
         mfmsr   r0
         e_stw   r0,  XMSR(r1)
 
-        mfspr   r0,  SPEFSCR
-        e_stw   r0,  XSPEFSCR(r1)
+#        mfspr   r0,  SPEFSCR
+#        e_stw   r0,  XSPEFSCR(r1)
 
         mfspr   r0,  SRR0
         e_stw   r0,  XSRR0(r1)
@@ -220,8 +220,8 @@ prologue:       .macro
         mfspr   r0,  SRR1
         e_stw   r0,  XSRR1(r1)
 
-        mfspr   r0,  USPRG0
-        e_stw   r0,  XUSPRG(r1)
+#        mfspr   r0,  USPRG0
+#        e_stw   r0,  XUSPRG(r1)
 
         mflr    r0
         e_stw   r0,  XLR(r1)
@@ -324,11 +324,11 @@ epilogue:       .macro
         e_lwz   r0,  XSRR0(r1)
         mtspr   SRR0,r0
 
-        e_lwz   r0,  XUSPRG(r1)
-        mtspr   USPRG0,r0
+#        e_lwz   r0,  XUSPRG(r1)
+#        mtspr   USPRG0,r0
 
-        e_lwz   r0,  XSPEFSCR(r1)
-        mtspr   SPEFSCR,r0
+#        e_lwz   r0,  XSPEFSCR(r1)
+#        mtspr   SPEFSCR,r0
 
         e_lwz   r0,  XR0(r1)
         e_add2i. r1, STACK_FRAME_SIZE

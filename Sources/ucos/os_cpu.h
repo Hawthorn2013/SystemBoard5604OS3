@@ -77,7 +77,7 @@ typedef  CPU_SR         OS_CPU_SR;                                      /* Defin
 *********************************************************************************************************
 */
 
-#define  OS_SAVE_CONTEXT_WITH_FPRS
+//#define  OS_SAVE_CONTEXT_WITH_FPRS
 
 
 /*
