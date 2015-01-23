@@ -87,7 +87,7 @@ void Init_Pit(void)
 {
 	/* NOTE:  DIVIDER FROM SYSCLK TO PIT ASSUMES DEFAULT DIVIDE BY 1 */
 	PIT.PITMCR.R = 0x00000001;	/* Enable PIT and configure timers to stop in debug modem */
-	PIT.CH[1].LDVAL.R = 800000;	/* 800000==10ms */
+	PIT.CH[1].LDVAL.R = 1600000;	/* 800000==10ms */
 	PIT.CH[1].TCTRL.R = 0x00000003;	/* Enable PIT1 interrupt and make PIT active to count */
 	INTC_InstallINTCInterruptHandler(OSTickISR_Out, 60, 1);	/* PIT 1 interrupt vector with priority 1 */
 }
@@ -95,7 +95,7 @@ void Init_Pit(void)
 
 void OSTickISR_Out(void)
 {
+    PIT.CH[1].TFLG.B.TIF = 1;   // MPC56xxB/P/S: Clear PIT 1 flag by writing 1
     BD3 = ~BD3;
     OSTickISR();
-    PIT.CH[1].TFLG.B.TIF = 1;   // MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }

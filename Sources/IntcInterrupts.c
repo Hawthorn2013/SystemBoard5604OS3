@@ -19,7 +19,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef INTC_NESTED_INTERRUPT
-#define INTC_NESTED_INTERRUPT 0
+#define INTC_NESTED_INTERRUPT 1
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -80,7 +80,7 @@ void INTC_INTCInterruptHandler(void)
 
     INTC.EOIR.R = 0;
 }
-
+#error
 #else
 
 __declspec(interrupt)

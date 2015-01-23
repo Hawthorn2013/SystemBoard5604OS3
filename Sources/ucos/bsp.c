@@ -33,5 +33,6 @@
 
 void  BSP_TmrTickISR (void)
 {
+    BD0 = ~BD0;
     OSTimeTick();
 }

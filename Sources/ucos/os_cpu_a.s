@@ -36,7 +36,7 @@
     .section .xcptn_vle, "ax"
 
     .extern BSP_TmrTickISR
-
+    .extern OSTimeTick
     .extern OSTaskSwHook
     .extern OSIntEnter
     .extern OSIntExit

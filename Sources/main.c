@@ -20,7 +20,9 @@ int main(void) {
                    (void *)0,
                    &Test2TaskStk[Test2_TASK_STK_SIZE-1],
                    TEST2_TASK_PRIO );
-	//Enable_IRQ();
+    INTC.CPR.B.PRI = 0;
+//    asm(" wrteei 1");
+//	Enable_IRQ();
     OSStart();	/* Start multitasking (i.e. give control to uC/OS-II)       */
 
 
