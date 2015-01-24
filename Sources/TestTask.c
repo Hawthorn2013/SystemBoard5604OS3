@@ -22,10 +22,7 @@ void Test1Task(void *p_arg)
    (void) p_arg;              //转换成空指针，防止编译器错误
    while(1)
    {
-       BD1 = 1;
-       for (i = 0; i < 1000; i++) { }
-       BD1 = 0;
-       for (i = 0; i < 1000; i++) { }
+       BD1 = ~BD1;
        OSTimeDly(3);
    }
 }
@@ -39,10 +36,7 @@ void Test2Task(void *p_arg)
    (void) p_arg;              //转换成空指针，防止编译器错误
    while(1)
    {
-       BD2 = 1;
-       for (i = 0; i < 1000; i++) { }
-       BD2 = 0;
-       for (i = 0; i < 1000; i++) { }
+       BD2 = ~BD2;
        OSTimeDly(3);
    }
 }

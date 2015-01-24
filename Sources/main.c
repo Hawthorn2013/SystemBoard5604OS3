@@ -16,10 +16,10 @@ int main(void) {
                    (void *)0,
                    &Test1TaskStk[Test1_TASK_STK_SIZE-1],
                    TEST1_TASK_PRIO );
-    OSTaskCreate(  Test2Task,
-                   (void *)0,
-                   &Test2TaskStk[Test2_TASK_STK_SIZE-1],
-                   TEST2_TASK_PRIO );
+//    OSTaskCreate(  Test2Task,
+//                   (void *)0,
+//                   &Test2TaskStk[Test2_TASK_STK_SIZE-1],
+//                   TEST2_TASK_PRIO );
     INTC.CPR.B.PRI = 0;
 //    asm(" wrteei 1");
 //	Enable_IRQ();

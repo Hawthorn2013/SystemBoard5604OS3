@@ -33,7 +33,8 @@
 
     .include "os_cpu_a.inc"
 
-    .section .xcptn_vle, "ax"
+#    .section .xcptn_vle, "ax"
+    .section .text_vle
 
     .extern BSP_TmrTickISR
     .extern OSTimeTick
@@ -131,16 +132,16 @@ OSTickISR:
 
 OSTickISR_NotSaveSP:
 	e_li      r0, 0                                   # load r0 with 0x0000
-    e_lis     r3, INTC_EOIR@ha                        # get the address of the INTC.EOIR Register ...
-    e_stw     r0, INTC_EOIR@l(r3)                     # and clear the INTC.EOIR register
+#    e_lis     r3, INTC_EOIR@ha                        # get the address of the INTC.EOIR Register ...
+#    e_stw     r0, INTC_EOIR@l(r3)                     # and clear the INTC.EOIR register
 
-    e_bl    BSP_TmrTickISR                          # call TmrTick handler
-    e_bl    OSIntExit                               # call to decrement OSIntNesting
+    e_bl    OSTimeTick                          # call TmrTick handler
+#    e_bl    OSIntExit                               # call to decrement OSIntNesting
 
     epilogue                                        # Restore context
 
-    se_rfi                                          # run task
-
+#    se_rfi                                          # run task
+    se_blr
 
 #$PAGE
 #*********************************************************************************************************

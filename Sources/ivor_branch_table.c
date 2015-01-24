@@ -20,6 +20,8 @@ extern "C" {
 extern void INTC_INTCInterruptHandler(void);
 extern void OSExtIntISR(void);
 extern void OSCtxSw(void);
+extern void OSTickISR(void);
+
 
 #pragma push
 
@@ -63,7 +65,7 @@ IVOR8trap:  b	OSCtxSw /* System call interrupt handler */
 IVOR9trap:  b	IVOR9trap /* AP unavailable interrupt handler */
 
 	.align SIXTEEN_BYTES
-IVOR10trap: b   IVOR10trap /* Decrementer interrupt handler */
+IVOR10trap: b   OSTickISR /* Decrementer interrupt handler */
 
 	.align SIXTEEN_BYTES
 IVOR11trap:  b	IVOR11trap /* Fixed Interval Timer interrupt handler */
