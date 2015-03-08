@@ -98,4 +98,5 @@ void OSTickISR_Out(void)
     PIT.CH[1].TFLG.B.TIF = 1;   // MPC56xxB/P/S: Clear PIT 1 flag by writing 1
     BD3 = ~BD3;
     OSTickISR();
+    PIT.PITMCR.R=0x00000000;
 }
