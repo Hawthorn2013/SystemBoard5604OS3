@@ -11,10 +11,10 @@
 
 /* 定义板载LED */
 #if 1
-#define BD0 (SIU.GPDO[12].B.PDO)
-#define BD1 (SIU.GPDO[13].B.PDO)
-#define BD2 (SIU.GPDO[14].B.PDO)
-#define BD3 (SIU.GPDO[15].B.PDO)
+#define BD1 (SIU.GPDO[40].B.PDO)
+#define BD2 (SIU.GPDO[45].B.PDO)
+//#define BD3 (SIU.GPDO[44].B.PDO)
+#define BD4 (SIU.GPDO[71].B.PDO)
 #endif
 
 

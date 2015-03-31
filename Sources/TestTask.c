@@ -173,9 +173,24 @@ void Test1Task(void *p_arg)
 {
 	BYTE rev=0x22;
 	(void) p_arg;
+	OSTaskCreate(  Test2Task,
+	                   (void *)0,
+	                   &Test2TaskStk[Test2_TASK_STK_SIZE-1],
+	                   TEST2_TASK_PRIO );
 	while(1)
 	{
+		BD1=~BD1;
 		serial_port_1_TX(rev);
+		OSTimeDly(20);
+	}
+}
+
+void Test2Task(void *p_arg)
+{
+	(void) p_arg;
+	while(1)
+	{
+		BD2=~BD2;
 		OSTimeDly(20);
 	}
 }
