@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * TestTask.h
  *
  *  Created on: Jan 22, 2015
@@ -19,7 +19,7 @@
 #define TEST4_TASK_PRIO (14)
 
 
-/*·ÀÖ¹ÖØ¸´¶¨Òå,Î´³É¹¦
+/*é˜²æ­¢é‡å¤å®šä¹‰,æœªæˆåŠŸ
 #ifdef TestTask_GLOBALS
 #define TestTask_EXT
 #else 

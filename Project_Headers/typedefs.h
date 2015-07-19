@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
  * FILE NAME: $RCSfile: typedefs.h,v $       COPYRIGHT (c) Freescale 2005 *
  * DESCRIPTION:                                     All Rights Reserved   *
  * This file defines all of the data types for the Motorola header file.  *

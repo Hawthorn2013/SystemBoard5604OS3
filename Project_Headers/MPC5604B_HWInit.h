@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FILE : MPC5604B_HWInit.h
  *
  * DESCRIPTION:

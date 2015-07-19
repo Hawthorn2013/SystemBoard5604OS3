@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * Base.c
  *
  *  Created on: Aug 26, 2014
@@ -10,7 +10,7 @@
 
 
 /*
- * ½ûÓÃ¿´ÃÅ¹·
+ * ç¦ç”¨çœ‹é—¨ç‹—
  */
 void Disable_Watchdog(void)
 {
@@ -21,30 +21,30 @@ void Disable_Watchdog(void)
 
 
 /*
- * ³õÊ¼»¯µ¥Æ¬»ú
+ * åˆå§‹åŒ–å•ç‰‡æœº
  */
 void Init_ModesAndClock(void) 
 {
     ME.MER.R = 0x0000001D;	/* Enable DRUN, RUN0, SAFE, RESET modes */
-	/* ÉèÖÃsysclk */
+	/* è®¾ç½®sysclk */
     //CGM.FMPLL_CR.R = 0x02400100;	/* 8 MHz xtal: Set PLL0 to 64 MHz */
     CGM.FMPLL_CR.R = 0x01280000;	/* 8 MHz xtal: Set PLL0 to 80 MHz */
     //CGM.FMPLL_CR.R = 0x013C0000;	/* 8 MHz xtal: Set PLL0 to 120 MHz */ 
-    ME.RUN[0].R = 0x001F0064;	/* RUN0 cfg: 16MHzIRCON,OSC0ON,PLL0ON,syclk=PLL     sysclkÑ¡ÔñËøÏà»·Ê±ÖÓ */
-    ME.RUNPC[0].R = 0x00000010;	/* Peri. Cfg. 1 settings: only run in RUN0 mode      Ñ¡ÔñRUN0Ä£Ê½ */
+    ME.RUN[0].R = 0x001F0064;	/* RUN0 cfg: 16MHzIRCON,OSC0ON,PLL0ON,syclk=PLL     sysclké€‰æ‹©é”ç›¸ç¯æ—¶é’Ÿ */
+    ME.RUNPC[0].R = 0x00000010;	/* Peri. Cfg. 1 settings: only run in RUN0 mode      é€‰æ‹©RUN0æ¨¡å¼ */
   
-	/* PCTL[?] Ñ¡ÔñĞèÒªÊ±ÖÓÄ£¿é(Ä¬ÈÏ¼´¿É£¬²»ÓÃÉèÖÃ) */
+	/* PCTL[?] é€‰æ‹©éœ€è¦æ—¶é’Ÿæ¨¡å—(é»˜è®¤å³å¯ï¼Œä¸ç”¨è®¾ç½®) */
 	//ME.PCTL[32].R = 0x00;	/* MPC56xxB/P/S ADC 0: select ME.RUNPC[0] */
     ME.PCTL[32].B.DBG_F = 0;
 	/* Mode Transition to enter RUN0 mode */
     ME.MCTL.R = 0x40005AF0;	/* Enter RUN0 Mode & Key */
     ME.MCTL.R = 0x4000A50F;	/* Enter RUN0 Mode & Inverted Key */
     
-    while (ME.GS.B.S_MTRANS) {}	/* Wait for mode transition to complete µÈ´ıÄ£Ê½×ª»»Íê³É */
-    while(ME.GS.B.S_CURRENTMODE != 4) {} /* Verify RUN0 is the current mode µÈ´ıÑ¡ÔñRUN0Ä£Ê½ */
+    while (ME.GS.B.S_MTRANS) {}	/* Wait for mode transition to complete ç­‰å¾…æ¨¡å¼è½¬æ¢å®Œæˆ */
+    while(ME.GS.B.S_CURRENTMODE != 4) {} /* Verify RUN0 is the current mode ç­‰å¾…é€‰æ‹©RUN0æ¨¡å¼ */
   
-	/* ¿ªperi0¡¢1¡¢2 */
-	/* ÍâÉèÊ±ÖÓ×ÜÏß ¿ÉÓÃÓÚ·ÖÆµ */
+	/* å¼€peri0ã€1ã€2 */
+	/* å¤–è®¾æ—¶é’Ÿæ€»çº¿ å¯ç”¨äºåˆ†é¢‘ */
 	CGM.SC_DC[0].R = 0x84;	/* LIN */
 	CGM.SC_DC[1].R = 0x80;	/* FLEXCAN,DSPI */
     CGM.SC_DC[2].R = 0x80;	/* eMIOS,CTU,ADC */
@@ -52,7 +52,7 @@ void Init_ModesAndClock(void)
 
 
 /*
- * Ê¹ÄÜÍâ²¿ÖĞ¶Ï
+ * ä½¿èƒ½å¤–éƒ¨ä¸­æ–­
  */
 void Enable_IRQ(void)
 {
@@ -62,7 +62,7 @@ void Enable_IRQ(void)
 
 
 /*
- * ³õÊ¼»¯ÁúÇğ°åÔØLED
+ * åˆå§‹åŒ–é¾™ä¸˜æ¿è½½LED
  */
 void Init_LQBoard_LED(void)
 {
@@ -71,7 +71,7 @@ void Init_LQBoard_LED(void)
  	SIU.PCR[14].R = 0x0203; 
 	SIU.PCR[15].R = 0x0203;	/* PA15 */
  	
-	SIU.GPDO[12].R = 0;	/* 1=Ï¨Ãğ */
+	SIU.GPDO[12].R = 0;	/* 1=ç†„ç­ */
 	SIU.GPDO[13].R = 0;
 	SIU.GPDO[14].R = 0;
 	SIU.GPDO[15].R = 0;
@@ -80,7 +80,7 @@ void Init_LQBoard_LED(void)
 
 
 /*
- * ³õÊ¼»¯PITÖĞ¶Ï
+ * åˆå§‹åŒ–PITä¸­æ–­
  * 10ms
  */
 void Init_Pit(void)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FILE: ivor_branch_table.c
  *   
  * COPYRIGHT (c) 2007-2012 Freescale Semiconductor, Inc. All rights reserved.

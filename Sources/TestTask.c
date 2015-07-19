@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * TestTask.c
  *
  *  Created on: Jan 22, 2015
@@ -21,7 +21,7 @@ OS_STK Test4TaskStk[Test4_TASK_STK_SIZE-1];
 	volatile int i = 0;
 	
 	
-   (void) p_arg;              //×ª»»³É¿ÕÖ¸Õë£¬·ÀÖ¹±àÒëÆ÷´íÎó
+   (void) p_arg;              //è½¬æ¢æˆç©ºæŒ‡é’ˆï¼Œé˜²æ­¢ç¼–è¯‘å™¨é”™è¯¯
    while(1)
    {
        BD1 = ~BD1;
@@ -35,7 +35,7 @@ void Test2Task(void *p_arg)
     volatile int i = 0;
     
     
-   (void) p_arg;              //×ª»»³É¿ÕÖ¸Õë£¬·ÀÖ¹±àÒëÆ÷´íÎó
+   (void) p_arg;              //è½¬æ¢æˆç©ºæŒ‡é’ˆï¼Œé˜²æ­¢ç¼–è¯‘å™¨é”™è¯¯
    while(1)
    {
        BD2 = ~BD2;
@@ -44,7 +44,7 @@ void Test2Task(void *p_arg)
 }*/
 
 
-//Á÷Ë®µÆ
+//æµæ°´ç¯
 /*OS_EVENT *Sem1,*Sem2,*Sem3,*Sem4;
 
 void Test1Task(void *p_arg)
@@ -66,7 +66,7 @@ void Test1Task(void *p_arg)
 		    	   (void *)0,
 		    	   &Test4TaskStk[Test4_TASK_STK_SIZE-1],
 		    	   TEST4_TASK_PRIO );
-	BD0=1;			//³õÊ¼µÆ²»ÁÁ
+	BD0=1;			//åˆå§‹ç¯ä¸äº®
 	
 	while(1)
 	{
@@ -83,7 +83,7 @@ void Test2Task(void *p_arg)
 {
 	(void) p_arg;
 	
-	BD1=1;			//³õÊ¼µÆ²»ÁÁ
+	BD1=1;			//åˆå§‹ç¯ä¸äº®
 	
 	while(1)
 	{
@@ -100,7 +100,7 @@ void Test3Task(void *p_arg)
 {
 	(void) p_arg;
 	
-	BD2=1;			//³õÊ¼µÆ²»ÁÁ
+	BD2=1;			//åˆå§‹ç¯ä¸äº®
 	while(1)
 	{
 		INT8U err;
@@ -129,7 +129,7 @@ void Test4Task(void *p_arg)
 }*/
 
 //OS_EVENT *Sem;
-/*void Test1Task(void *p_arg)		//°´¼üÈÎÎñ
+/*void Test1Task(void *p_arg)		//æŒ‰é”®ä»»åŠ¡
 {
 	(void) p_arg;
 	
