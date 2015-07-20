@@ -171,7 +171,7 @@ void Test2Task(void *p_arg)
 
 void Test1Task(void *p_arg)
 {
-	BYTE rev=0x22;
+	uint8_t rev=0x22;
 	(void) p_arg;
 	OSTaskCreate(  Test2Task,
 	                   (void *)0,

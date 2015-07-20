@@ -14,10 +14,6 @@
 
 #include      <stdarg.h>
 
-#ifndef _TYPEDEF_BYTE_
-#define _TYPEDEF_BYTE_
-typedef unsigned char BYTE;
-#endif
 
 #include      "MPC5604B.h"
 #include      "IntcInterrupts.h"
