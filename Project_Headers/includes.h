@@ -17,7 +17,6 @@
 
 #include      "MPC5604B.h"
 #include      "IntcInterrupts.h"
-#include      "Base.h"
 #include      "cpu.h"
 #include      "app_cfg.h"
 #include      "ucos_ii.h"

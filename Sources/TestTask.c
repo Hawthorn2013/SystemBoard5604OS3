@@ -171,17 +171,18 @@ void Test2Task(void *p_arg)
 
 void Test1Task(void *p_arg)
 {
-	uint8_t rev=0x22;
-	(void) p_arg;
-	OSTaskCreate(  Test2Task,
-	                   (void *)0,
-	                   &Test2TaskStk[Test2_TASK_STK_SIZE-1],
-	                   TEST2_TASK_PRIO );
-	while(1)
-	{
-		BD1=~BD1;
-//		serial_port_1_TX(rev);
-		OSTimeDly(20);
+    int cnt = 0;
+    (void) p_arg;
+    Enable_IRQ();
+    while(1)
+    {
+        LED1 = ~LED1;
+        Delay_ms(30);
+        if (++cnt >= 30)
+        {
+            cnt = 0;
+            OSTimeDly(100);
+        }
 	}
 }
 
@@ -190,7 +191,7 @@ void Test2Task(void *p_arg)
 	(void) p_arg;
 	while(1)
 	{
-		BD2=~BD2;
-		OSTimeDly(20);
+        LED2 = ~LED2;
+        Delay_ms(60);
 	}
 }

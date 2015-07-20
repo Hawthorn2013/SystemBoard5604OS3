@@ -121,6 +121,16 @@
 #define PCR_BSP_RS232_TX                            (18)
 #define PCR_BSP_RS232_RX                            (19)
 
+/*
+**************************************************************************************************************
+*                                            OSTickISR
+**************************************************************************************************************
+*/
+
+#define INTC_PRIORITY_BSP_OSTickISR                 (1)
+#define IRQ_BSP_OSTickISR                           (60)
+#define PIT_CH_BSP_OSTickISR                        (1)
+
 /*$PAGE*/
 /*
 *********************************************************************************************************
@@ -188,10 +198,26 @@ extern void  INTC_Handler_BSP_UART_0_TXI(void);
 extern void  INTC_Handler_BSP_UART_0_ERR(void);
 
 /*
+**************************************************************************************************************
+*                                            OSTickISR
+**************************************************************************************************************
+*/
+
+extern void Init_Pit(void);
+extern void OSTickISR_Out(void);
+
+/*
 *********************************************************************************************************
 *                                            MISCELLANEOUS
 *********************************************************************************************************
 */
+
+extern void  Delay_us(uint32_t us);
+extern void  Delay_ms(uint32_t ms);
+extern void  Disable_Watchdog(void);
+extern void  Enable_IRQ(void);
+extern void  Init_ModesAndClock(void);
+
 
 #ifndef CPU_CONST_FREQ
   #error   "BSP.H, Missing CPU_CONST_FREQ: Enable (1) or Disable (0) automatic CPU frequency check at CPU_CLK_FREQ()"
