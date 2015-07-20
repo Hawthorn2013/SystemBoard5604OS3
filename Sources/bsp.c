@@ -228,3 +228,46 @@ void INTC_Handler_BSP_S3_S4(void)
         }
     }
 }
+
+
+int Init_UART_0(uint32_t div_m, uint32_t div_f, INTCInterruptFn handler_rxi, INTCInterruptFn handler_txi, INTCInterruptFn handler_err)
+{
+    LINFLEX_0.LINCR1.B.INIT = 1;
+    LINFLEX_0.LINCR1.R = 0x00000015;
+    LINFLEX_0.LINIER.B.DRIE = 1;
+    LINFLEX_0.LINIBRR.B.DIV_M = div_m;
+    LINFLEX_0.LINFBRR.B.DIV_F = div_f;
+    LINFLEX_0.UARTCR.B.UART = 1;
+    LINFLEX_0.UARTCR.R = 0x00000033;
+    LINFLEX_0.LINCR1.B.INIT = 0;
+    SIU.PCR[PCR_BSP_RS232_TX].R = 0x0400;
+    SIU.PCR[PCR_BSP_RS232_RX].R = 0x0103;
+    INTC_InstallINTCInterruptHandler((INTCInterruptFn)handler_rxi, IRQ_BSP_RS232_RXI, INTC_PRIORITY_BSP_RS232_RXI);
+    INTC_InstallINTCInterruptHandler((INTCInterruptFn)handler_txi, IRQ_BSP_RS232_TXI, INTC_PRIORITY_BSP_RS232_TXI);
+    INTC_InstallINTCInterruptHandler((INTCInterruptFn)handler_err, IRQ_BSP_RS232_ERR, INTC_PRIORITY_BSP_RS232_ERR);
+}
+
+
+void INTC_Handler_BSP_UART_0_RXI(void)
+{
+    uint8_t rev_ch;
+
+    while(!LINFLEX_0.UARTSR.B.DRF){}
+    rev_ch = (uint8_t)LINFLEX_0.BDRM.B.DATA4;
+    LINFLEX_0.UARTSR.B.DRF = 1;
+    LINFLEX_0.BDRL.B.DATA0 = rev_ch;
+    while(!LINFLEX_0.UARTSR.B.DTF){}
+    LINFLEX_0.UARTSR.B.DTF = 1;
+}
+
+
+void INTC_Handler_BSP_UART_0_TXI(void)
+{
+    
+}
+
+
+void INTC_Handler_BSP_UART_0_ERR(void)
+{
+    
+}

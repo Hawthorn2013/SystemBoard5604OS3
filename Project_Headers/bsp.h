@@ -88,6 +88,39 @@
 #define     PIN_VALUE_KEY_UP                        (1)
 #define     PIN_VALUE_KEY_DOWN                      (0)
 
+/*
+**************************************************************************************************************
+*                                            UART SERVICES
+**************************************************************************************************************
+*/
+
+#define LINFLEX_DIV_M_BAUD_RATE_2400                (416)
+#define LINFLEX_DIV_F_BAUD_RATE_2400                (11)
+#define LINFLEX_DIV_M_BAUD_RATE_9600                (104)
+#define LINFLEX_DIV_F_BAUD_RATE_9600                (3)
+#define LINFLEX_DIV_M_BAUD_RATE_10417               (96)
+#define LINFLEX_DIV_F_BAUD_RATE_10417               (0)
+#define LINFLEX_DIV_M_BAUD_RATE_19200               (52)
+#define LINFLEX_DIV_F_BAUD_RATE_19200               (1)
+#define LINFLEX_DIV_M_BAUD_RATE_57600               (17)
+#define LINFLEX_DIV_F_BAUD_RATE_57600               (6)
+#define LINFLEX_DIV_M_BAUD_RATE_115200              (8)
+#define LINFLEX_DIV_F_BAUD_RATE_115200              (11)
+#define LINFLEX_DIV_M_BAUD_RATE_230400              (4)
+#define LINFLEX_DIV_F_BAUD_RATE_230400              (5)
+#define LINFLEX_DIV_M_BAUD_RATE_460800              (2)
+#define LINFLEX_DIV_F_BAUD_RATE_460800              (3)
+#define LINFLEX_DIV_M_BAUD_RATE_921600              (1)
+#define LINFLEX_DIV_F_BAUD_RATE_921600              (1)
+#define IRQ_BSP_RS232_RXI                           (79)
+#define IRQ_BSP_RS232_TXI                           (80)
+#define IRQ_BSP_RS232_ERR                           (81)
+#define INTC_PRIORITY_BSP_RS232_RXI                 (2)
+#define INTC_PRIORITY_BSP_RS232_TXI                 (2)
+#define INTC_PRIORITY_BSP_RS232_ERR                 (2)
+#define PCR_BSP_RS232_TX                            (18)
+#define PCR_BSP_RS232_RX                            (19)
+
 /*$PAGE*/
 /*
 *********************************************************************************************************
@@ -142,6 +175,17 @@ extern void  Init_EMIOS_0(void);
 extern int   Init_Key(uint16_t pcr, uint16_t uc, uint16_t irq, INTCInterruptFn handler);
 extern void  INTC_Handler_BSP_S1_S2(void);
 extern void  INTC_Handler_BSP_S3_S4(void);
+
+/*
+**************************************************************************************************************
+*                                            UART SERVICES
+**************************************************************************************************************
+*/
+
+extern int   Init_UART_0(uint32_t div_m, uint32_t div_f, INTCInterruptFn handler_rxi, INTCInterruptFn handler_txi, INTCInterruptFn handler_err);
+extern void  INTC_Handler_BSP_UART_0_RXI(void);
+extern void  INTC_Handler_BSP_UART_0_TXI(void);
+extern void  INTC_Handler_BSP_UART_0_ERR(void);
 
 /*
 *********************************************************************************************************
