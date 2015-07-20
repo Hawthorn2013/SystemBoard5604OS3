@@ -21,13 +21,9 @@ typedef unsigned char BYTE;
 
 #include      "MPC5604B.h"
 #include      "IntcInterrupts.h"
-#include      "../Base.h"
+#include      "Base.h"
 #include      "cpu.h"
 #include      "app_cfg.h"
 #include      "ucos_ii.h"
 #include      "bsp.h"
-#include	  "../TestTask.h"
-#include 	  "../Init.h"
-#include 	  "../UART.h"
-#include 	  "../React.h"
-
+#include	  "TestTask.h"

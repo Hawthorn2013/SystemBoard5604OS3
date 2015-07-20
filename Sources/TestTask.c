@@ -8,7 +8,7 @@
 
 
 
-#include "ucos/includes.h"
+#include "includes.h"
 
 OS_STK Test1TaskStk[Test1_TASK_STK_SIZE-1];
 OS_STK Test2TaskStk[Test2_TASK_STK_SIZE-1];
@@ -180,7 +180,7 @@ void Test1Task(void *p_arg)
 	while(1)
 	{
 		BD1=~BD1;
-		serial_port_1_TX(rev);
+//		serial_port_1_TX(rev);
 		OSTimeDly(20);
 	}
 }

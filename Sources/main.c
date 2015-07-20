@@ -1,4 +1,4 @@
-﻿#include "ucos/includes.h"
+﻿#include "includes.h"
 
 
 
@@ -9,8 +9,8 @@ int main(void) {
     asm(" wrteei 0");
 	Init_ModesAndClock();
 	Init_LQBoard_LED();
-	init_serial_port_1();
-	init_LED();
+//	init_serial_port_1();
+//	init_LED();
 	asm(" wrteei 0");
 	Init_Pit();
     OSInit();
