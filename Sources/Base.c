@@ -62,24 +62,6 @@ void Enable_IRQ(void)
 
 
 /*
- * 初始化龙丘板载LED
- */
-void Init_LQBoard_LED(void)
-{
- 	SIU.PCR[12].R = 0x0203;	/* PA12 */
-  	SIU.PCR[13].R = 0x0203;
- 	SIU.PCR[14].R = 0x0203; 
-	SIU.PCR[15].R = 0x0203;	/* PA15 */
- 	
-	SIU.GPDO[12].R = 0;	/* 1=熄灭 */
-	SIU.GPDO[13].R = 0;
-	SIU.GPDO[14].R = 0;
-	SIU.GPDO[15].R = 0;
-
-}
-
-
-/*
  * 初始化PIT中断
  * 10ms
  */

@@ -177,11 +177,11 @@ void INTC_Handler_BSP_S1_S2(void)
     if (EMIOS_0.CH[EMIOS_0_UC_BSP_S1].CSR.B.FLAG)
     {
         EMIOS_0.CH[EMIOS_0_UC_BSP_S1].CSR.B.FLAG = 1;
-        if (EMIOS_0.CH[EMIOS_0_UC_BSP_S1].CSR.B.UCIN == PIN_VALUE_KEY_UP)
+        if (PIN_VALUE_KEY_UP == EMIOS_0.CH[EMIOS_0_UC_BSP_S1].CSR.B.UCIN)
         {
             LED1 = PIN_VASLUE_LED_TURN_ON;
         }
-        if (EMIOS_0.CH[EMIOS_0_UC_BSP_S1].CSR.B.UCIN == PIN_VALUE_KEY_DOWN)
+        else
         {
             LED1 = PIN_VASLUE_LED_TURN_OFF;
         }
@@ -189,5 +189,42 @@ void INTC_Handler_BSP_S1_S2(void)
     if (EMIOS_0.CH[EMIOS_0_UC_BSP_S2].CSR.B.FLAG)
     {
         EMIOS_0.CH[EMIOS_0_UC_BSP_S2].CSR.B.FLAG = 1;
+        if (PIN_VALUE_KEY_UP == EMIOS_0.CH[EMIOS_0_UC_BSP_S2].CSR.B.UCIN)
+        {
+            LED2 = PIN_VASLUE_LED_TURN_ON;
+        }
+        else
+        {
+            LED2 = PIN_VASLUE_LED_TURN_OFF;
+        }
+    }
+}
+
+
+void INTC_Handler_BSP_S3_S4(void)
+{
+    if (EMIOS_0.CH[EMIOS_0_UC_BSP_S3].CSR.B.FLAG)
+    {
+        EMIOS_0.CH[EMIOS_0_UC_BSP_S3].CSR.B.FLAG = 1;
+        if (PIN_VALUE_KEY_UP == EMIOS_0.CH[EMIOS_0_UC_BSP_S3].CSR.B.UCIN)
+        {
+            LED3 = PIN_VASLUE_LED_TURN_ON;
+        }
+        else
+        {
+            LED3 = PIN_VASLUE_LED_TURN_OFF;
+        }
+    }
+    if (EMIOS_0.CH[EMIOS_0_UC_BSP_S4].CSR.B.FLAG)
+    {
+        EMIOS_0.CH[EMIOS_0_UC_BSP_S4].CSR.B.FLAG = 1;
+        if (PIN_VALUE_KEY_UP == EMIOS_0.CH[EMIOS_0_UC_BSP_S4].CSR.B.UCIN)
+        {
+            LED4= PIN_VASLUE_LED_TURN_ON;
+        }
+        else
+        {
+            LED4 = PIN_VASLUE_LED_TURN_OFF;
+        }
     }
 }

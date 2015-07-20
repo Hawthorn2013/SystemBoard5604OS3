@@ -141,6 +141,7 @@ extern int   Toggle_LED(uint16_t pcrNo);
 extern void  Init_EMIOS_0(void);
 extern int   Init_Key(uint16_t pcr, uint16_t uc, uint16_t irq, INTCInterruptFn handler);
 extern void  INTC_Handler_BSP_S1_S2(void);
+extern void  INTC_Handler_BSP_S3_S4(void);
 
 /*
 *********************************************************************************************************
