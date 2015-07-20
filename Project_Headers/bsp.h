@@ -42,6 +42,18 @@
 #define     BSP_USART_INT_RDRF_STATUS 0x20000000
 #define     BSP_USART_INT_TDRE_STATUS 0x80000000
 
+/*
+**************************************************************************************************************
+*                                            LED SERVICES
+**************************************************************************************************************
+*/
+
+#define     PCR_BSP_LED1                    (68)
+#define     PCR_BSP_LED2                    (69)
+#define     PCR_BSP_LED3                    (70)
+#define     PCR_BSP_LED4                    (71)
+#define     LED_TURN_ON_VALUE               (0)
+#define     LED_TURN_OFF_VALUE               (1)
 
 /*$PAGE*/
 /*
@@ -79,6 +91,13 @@ void         BSP_USART_IntDis(CPU_INT08U com, CPU_INT32U mask);
 void         LED_On(CPU_INT08U led);
 void         LED_Off(CPU_INT08U led);
 void         LED_Toggle(CPU_INT08U led);
+extern int   Init_GPIO(uint16_t pcrNo);
+extern int   Set_GPIO(uint16_t pcrNo, int value);
+extern int   Get_GPIO(uint16_t pcrNo, int *value);
+extern int   Init_LED(void);
+extern int   Turn_on_LED(uint16_t pcrNo);
+extern int   Turn_off_LED(uint16_t pcrNo);
+extern int   Toggle_LED(uint16_t pcrNo);
 
 /*
 *********************************************************************************************************
