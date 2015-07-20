@@ -52,8 +52,41 @@
 #define     PCR_BSP_LED2                    (69)
 #define     PCR_BSP_LED3                    (70)
 #define     PCR_BSP_LED4                    (71)
-#define     LED_TURN_ON_VALUE               (0)
-#define     LED_TURN_OFF_VALUE              (1)
+#define     PIN_VASLUE_LED_TURN_ON          (0)
+#define     PIN_VASLUE_LED_TURN_OFF         (1)
+#if 1
+#define     LED1                            (SIU.GPDO[PCR_BSP_LED1].B.PDO)
+#define     LED2                            (SIU.GPDO[PCR_BSP_LED2].B.PDO)
+#define     LED3                            (SIU.GPDO[PCR_BSP_LED3].B.PDO)
+#define     LED4                            (SIU.GPDO[PCR_BSP_LED4].B.PDO)
+#endif
+/*
+**************************************************************************************************************
+*                                            KEY SERVICES
+**************************************************************************************************************
+*/
+
+#define     EMIOS_MODE_SAIC                         (0x02)      /* Single Action Input Capture */
+#define     EMIOS_BSL_COUNTER_BUS_A                 (0x00)
+#define     EMIOS_BSL_COUNTER_BUS_BCDE              (0x01)
+#define     EMIOS_BSL_INTERNAL_BUS                  (0x02)
+#define     EMIOS_EDSEL_BOTH_TRIGGERING             (0x01)
+#define     EMIOS_EDSEL_SINGLE_TRIGGERING           (0x00)
+#define     EMIOS_EDPOL_TRIGGER_ON_RISING_EDGE      (0x01)
+#define     EMIOS_EDPOL_TRIGGER_ON_FALLING_EDGE     (0x00)
+#define     PCR_BSP_S1                              (64)
+#define     PCR_BSP_S2                              (65)
+#define     PCR_BSP_S3                              (66)
+#define     PCR_BSP_S4                              (67)
+#define     EMIOS_0_UC_BSP_S1                       (16)
+#define     EMIOS_0_UC_BSP_S2                       (17)
+#define     EMIOS_0_UC_BSP_S3                       (18)
+#define     EMIOS_0_UC_BSP_S4                       (19)
+#define     IRQ_BSP_S1_S2                           (149)
+#define     IRQ_BSP_S3_S4                           (150)
+#define     INTC_PRIORITY_BSP_S1_S4                 (3)
+#define     PIN_VALUE_KEY_UP                        (1)
+#define     PIN_VALUE_KEY_DOWN                      (0)
 
 /*$PAGE*/
 /*
@@ -98,6 +131,16 @@ extern int   Init_LED(void);
 extern int   Turn_on_LED(uint16_t pcrNo);
 extern int   Turn_off_LED(uint16_t pcrNo);
 extern int   Toggle_LED(uint16_t pcrNo);
+
+/*
+**************************************************************************************************************
+*                                            KEY SERVICES
+**************************************************************************************************************
+*/
+
+extern void  Init_EMIOS_0(void);
+extern int   Init_Key(uint16_t pcr, uint16_t uc, uint16_t irq, INTCInterruptFn handler);
+extern void  INTC_Handler_BSP_S1_S2(void);
 
 /*
 *********************************************************************************************************

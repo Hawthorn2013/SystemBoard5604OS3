@@ -1,4 +1,4 @@
-/*
+﻿/*
 *********************************************************************************************************
 *                                                uC/OS-II
 *                                          The Real-Time Kernel
@@ -99,13 +99,13 @@ int Get_GPIO(uint16_t pcrNo, int *value)
 int Init_LED(void)
 {
     Init_GPIO(PCR_BSP_LED1);
-    Set_GPIO(PCR_BSP_LED1, LED_TURN_ON_VALUE);
+    Set_GPIO(PCR_BSP_LED1, PIN_VASLUE_LED_TURN_ON);
     Init_GPIO(PCR_BSP_LED2);
-    Set_GPIO(PCR_BSP_LED2, LED_TURN_ON_VALUE);
+    Set_GPIO(PCR_BSP_LED2, PIN_VASLUE_LED_TURN_ON);
     Init_GPIO(PCR_BSP_LED3);
-    Set_GPIO(PCR_BSP_LED3, LED_TURN_ON_VALUE);
+    Set_GPIO(PCR_BSP_LED3, PIN_VASLUE_LED_TURN_ON);
     Init_GPIO(PCR_BSP_LED4);
-    Set_GPIO(PCR_BSP_LED4, LED_TURN_ON_VALUE);
+    Set_GPIO(PCR_BSP_LED4, PIN_VASLUE_LED_TURN_ON);
     return 0;
 }
 
@@ -116,7 +116,7 @@ int Init_LED(void)
  */
 int Turn_on_LED(uint16_t pcrNo)
 {
-    return Set_GPIO(pcrNo, LED_TURN_ON_VALUE);
+    return Set_GPIO(pcrNo, PIN_VASLUE_LED_TURN_ON);
 }
 
 
@@ -126,7 +126,7 @@ int Turn_on_LED(uint16_t pcrNo)
  */
 int Turn_off_LED(uint16_t pcrNo)
 {
-    return Set_GPIO(pcrNo, LED_TURN_OFF_VALUE);
+    return Set_GPIO(pcrNo, PIN_VASLUE_LED_TURN_OFF);
 }
 
 
@@ -147,4 +147,47 @@ int Toggle_LED(uint16_t pcrNo)
         return 2;
     }
     return 0;
+}
+
+
+void Init_EMIOS_0(void)
+{
+    /* eMIOS0初始化80MHz分为10MHz */
+    EMIOS_0.MCR.B.GPRE= 7;  /* GPRE+1=分频系数；/* Divide 80 MHz sysclk by 7+1 = 8 for 10MHz eMIOS clk */
+    EMIOS_0.MCR.B.GPREN = 1;    /* Enable eMIOS clock */
+    EMIOS_0.MCR.B.GTBE = 1;   /* Enable global time base */
+    EMIOS_0.MCR.B.FRZ = 1;    /* Enable stopping channels when in debug mode */
+}
+
+
+int Init_Key(uint16_t pcr, uint16_t uc, uint16_t irq, INTCInterruptFn handler)
+{
+    EMIOS_0.CH[uc].CCR.B.MODE = EMIOS_MODE_SAIC;
+    EMIOS_0.CH[uc].CCR.B.BSL = EMIOS_BSL_INTERNAL_BUS;
+    EMIOS_0.CH[uc].CCR.B.EDSEL = EMIOS_EDSEL_BOTH_TRIGGERING;
+    SIU.PCR[pcr].R = 0x0100;
+    INTC_InstallINTCInterruptHandler(handler, irq, INTC_PRIORITY_BSP_S1_S4);
+    EMIOS_0.CH[uc].CCR.B.FEN = 1;
+    return 0;
+}
+
+
+void INTC_Handler_BSP_S1_S2(void)
+{
+    if (EMIOS_0.CH[EMIOS_0_UC_BSP_S1].CSR.B.FLAG)
+    {
+        EMIOS_0.CH[EMIOS_0_UC_BSP_S1].CSR.B.FLAG = 1;
+        if (EMIOS_0.CH[EMIOS_0_UC_BSP_S1].CSR.B.UCIN == PIN_VALUE_KEY_UP)
+        {
+            LED1 = PIN_VASLUE_LED_TURN_ON;
+        }
+        if (EMIOS_0.CH[EMIOS_0_UC_BSP_S1].CSR.B.UCIN == PIN_VALUE_KEY_DOWN)
+        {
+            LED1 = PIN_VASLUE_LED_TURN_OFF;
+        }
+    }
+    if (EMIOS_0.CH[EMIOS_0_UC_BSP_S2].CSR.B.FLAG)
+    {
+        EMIOS_0.CH[EMIOS_0_UC_BSP_S2].CSR.B.FLAG = 1;
+    }
 }
