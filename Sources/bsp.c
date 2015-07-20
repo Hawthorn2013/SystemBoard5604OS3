@@ -15,28 +15,6 @@
 #include "includes.h"
 
 
-        void    BSP_TmrTickISR(void);
-
-
-/*$PAGE*/
-/*
-*********************************************************************************************************
-*                                       TICK ISR
-*
-* Description: This function is the periodical time source of the uC/OS-II.
-*
-* Arguments  : none
-*
-* Note(s)    : BSP_TmrTickISR() MUST call OSTimeTick().
-*********************************************************************************************************
-*/
-
-void  BSP_TmrTickISR (void)
-{
-    OSTimeTick();
-}
-
-
 /*
  * Init pin to GPIO
  * Output high
@@ -294,20 +272,19 @@ void Delay_ms(uint32_t ms)
 }
 
 
-void Init_Pit(void)
+void Init_OSTickISR(void)
 {
     /* NOTE:  DIVIDER FROM SYSCLK TO PIT ASSUMES DEFAULT DIVIDE BY 1 */
     PIT.PITMCR.R = 0x00000001;  /* Enable PIT and configure timers to stop in debug modem */
-    PIT.CH[1].LDVAL.R = 1600000;    /* 800000==10ms */
-    PIT.CH[1].TCTRL.R = 0x00000003; /* Enable PIT1 interrupt and make PIT active to count */
-    INTC_InstallINTCInterruptHandler(OSTickISR_Out, 60, 1); /* PIT 1 interrupt vector with priority 1 */
+    PIT.CH[PIT_CH_BSP_OSTickISR].LDVAL.R = 1600000;    /* 800000==10ms */
+    INTC_InstallINTCInterruptHandler(INTC_Handler_OSTickISR, IRQ_BSP_OSTickISR, INTC_PRIORITY_BSP_OSTickISR); /* PIT 1 interrupt vector with priority 1 */
+    PIT.CH[PIT_CH_BSP_OSTickISR].TCTRL.R = 0x00000003; /* Enable PIT1 interrupt and make PIT active to count */
 }
 
 
-void OSTickISR_Out(void)
+void INTC_Handler_OSTickISR(void)
 {
-    PIT.CH[1].TFLG.B.TIF = 1;   // MPC56xxB/P/S: Clear PIT 1 flag by writing 1
-    //BD4 = ~BD4;
+    PIT.CH[PIT_CH_BSP_OSTickISR].TFLG.B.TIF = 1;   // MPC56xxB/P/S: Clear PIT 1 flag by writing 1
     OSTickISR();
     PIT.PITMCR.R=0x00000000;
 }

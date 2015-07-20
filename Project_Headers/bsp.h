@@ -203,8 +203,8 @@ extern void  INTC_Handler_BSP_UART_0_ERR(void);
 **************************************************************************************************************
 */
 
-extern void Init_Pit(void);
-extern void OSTickISR_Out(void);
+extern void Init_OSTickISR(void);
+extern void INTC_Handler_OSTickISR(void);
 
 /*
 *********************************************************************************************************
