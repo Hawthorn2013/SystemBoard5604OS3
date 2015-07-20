@@ -53,7 +53,7 @@
 #define     PCR_BSP_LED3                    (70)
 #define     PCR_BSP_LED4                    (71)
 #define     LED_TURN_ON_VALUE               (0)
-#define     LED_TURN_OFF_VALUE               (1)
+#define     LED_TURN_OFF_VALUE              (1)
 
 /*$PAGE*/
 /*
