@@ -169,6 +169,7 @@ void Test2Task(void *p_arg)
 	}
 }*/
 
+
 void Test1Task(void *p_arg)
 {
     int cnt = 0;
@@ -186,6 +187,7 @@ void Test1Task(void *p_arg)
 	}
 }
 
+
 void Test2Task(void *p_arg)
 {
 	(void) p_arg;
@@ -194,4 +196,25 @@ void Test2Task(void *p_arg)
         LED2 = ~LED2;
         Delay_ms(60);
 	}
+}
+
+
+void Test3Task(void *p_arg)
+{
+    const uint8_t list[] = "abcdefghijklmnopqrstuvwxyz";
+    INT8U err;
+    volatile int cnt = 0;
+    
+    (void) p_arg;
+    Sem_UART_0_TXI = OSSemCreate(1);
+    while(1)
+    {
+        OSSemPend(Sem_UART_0_TXI, 0, &err);
+        LED3 = ~LED3;
+        LINFLEX_0.BDRL.B.DATA0 = list[cnt++];
+        if (cnt >= sizeof(list)-1)
+        {
+            cnt = 0;
+        }
+    }
 }

@@ -15,6 +15,9 @@
 #include "includes.h"
 
 
+OS_EVENT *Sem_UART_0_TXI, *Sem_UART_0_RXI;
+
+
 /*
  * Init pin to GPIO
  * Output high
@@ -212,6 +215,7 @@ int Init_UART_0(uint32_t div_m, uint32_t div_f, INTCInterruptFn handler_rxi, INT
     LINFLEX_0.LINCR1.B.INIT = 1;
     LINFLEX_0.LINCR1.R = 0x00000015;
     LINFLEX_0.LINIER.B.DRIE = 1;
+    LINFLEX_0.LINIER.B.DTIE = 1;
     LINFLEX_0.LINIBRR.B.DIV_M = div_m;
     LINFLEX_0.LINFBRR.B.DIV_F = div_f;
     LINFLEX_0.UARTCR.B.UART = 1;
@@ -227,20 +231,18 @@ int Init_UART_0(uint32_t div_m, uint32_t div_f, INTCInterruptFn handler_rxi, INT
 
 void INTC_Handler_BSP_UART_0_RXI(void)
 {
-    uint8_t rev_ch;
-
-    while(!LINFLEX_0.UARTSR.B.DRF){}
-    rev_ch = (uint8_t)LINFLEX_0.BDRM.B.DATA4;
+//    uint8_t rev_ch;
+//
+//    while(!LINFLEX_0.UARTSR.B.DRF){}
+//    rev_ch = (uint8_t)LINFLEX_0.BDRM.B.DATA4;
     LINFLEX_0.UARTSR.B.DRF = 1;
-    LINFLEX_0.BDRL.B.DATA0 = rev_ch;
-    while(!LINFLEX_0.UARTSR.B.DTF){}
-    LINFLEX_0.UARTSR.B.DTF = 1;
 }
 
 
 void INTC_Handler_BSP_UART_0_TXI(void)
 {
-    
+    LINFLEX_0.UARTSR.B.DTF = 1;
+    OSSemPost(Sem_UART_0_TXI);
 }
 
 

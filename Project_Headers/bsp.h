@@ -192,6 +192,7 @@ extern void  INTC_Handler_BSP_S3_S4(void);
 **************************************************************************************************************
 */
 
+extern OS_EVENT *Sem_UART_0_TXI, *Sem_UART_0_RXI;
 extern int   Init_UART_0(uint32_t div_m, uint32_t div_f, INTCInterruptFn handler_rxi, INTCInterruptFn handler_txi, INTCInterruptFn handler_err);
 extern void  INTC_Handler_BSP_UART_0_RXI(void);
 extern void  INTC_Handler_BSP_UART_0_TXI(void);

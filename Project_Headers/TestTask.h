@@ -15,7 +15,7 @@
 #define Test4_TASK_STK_SIZE (512)
 #define TEST1_TASK_PRIO (10)
 #define TEST2_TASK_PRIO (12)
-#define TEST3_TASK_PRIO (13)
+#define TEST3_TASK_PRIO (7)
 #define TEST4_TASK_PRIO (14)
 
 
