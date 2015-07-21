@@ -210,22 +210,134 @@ void INTC_Handler_BSP_S3_S4(void)
 }
 
 
-int Init_UART_0(uint32_t div_m, uint32_t div_f, INTCInterruptFn handler_rxi, INTCInterruptFn handler_txi, INTCInterruptFn handler_err)
+int Init_UART_0_Ex(void)
 {
-    LINFLEX_0.LINCR1.B.INIT = 1;
-    LINFLEX_0.LINCR1.R = 0x00000015;
-    LINFLEX_0.LINIER.B.DRIE = 1;
-    LINFLEX_0.LINIER.B.DTIE = 1;
-    LINFLEX_0.LINIBRR.B.DIV_M = div_m;
-    LINFLEX_0.LINFBRR.B.DIV_F = div_f;
-    LINFLEX_0.UARTCR.B.UART = 1;
-    LINFLEX_0.UARTCR.R = 0x00000033;
-    LINFLEX_0.LINCR1.B.INIT = 0;
+    Init_UART(&LINFLEX_0);
+    Set_UART_Baud_Rate(&LINFLEX_0, 115200);
+    Set_UART_0_Pin();
+    Set_UART_0_INTC_Handler(INTC_Handler_BSP_UART_0_RXI, INTC_Handler_BSP_UART_0_TXI, INTC_Handler_BSP_UART_0_ERR);
+    Enable_UART_RXI(&LINFLEX_0);
+    Enable_UART_TXI(&LINFLEX_0);
+}
+
+
+int Init_UART(volatile struct LINFLEX_tag *uart)
+{
+    uart->LINCR1.B.INIT = 1;
+    uart->LINCR1.R = 0x00000015;
+    uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_9600;
+    uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_9600;
+    uart->UARTCR.B.UART = 1;
+    uart->UARTCR.R = 0x00000033;
+    uart->LINCR1.B.INIT = 0;
+    return 0;
+}
+
+
+int Set_UART_0_Pin(void)
+{
     SIU.PCR[PCR_BSP_RS232_TX].R = 0x0400;
     SIU.PCR[PCR_BSP_RS232_RX].R = 0x0103;
+    return 0;
+}
+
+
+/*
+ * Success return 0
+ */
+int Set_UART_Baud_Rate(volatile struct LINFLEX_tag *uart, int32_t baudrate)
+{
+    int baud_rate_not_found = 0;
+    
+    uart->LINCR1.B.INIT = 1;
+    switch (baudrate)
+    {
+        case (2400) :
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_2400;
+            uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_2400;
+            break;
+        case (9600) :
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_9600;
+            uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_9600;
+            break;
+        case (10417) :
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_10417;
+            uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_10417;
+            break;
+        case (19200) :
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_19200;
+            uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_19200;
+            break;
+        case (57600) :
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_57600;
+            uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_57600;
+            break;
+        case (115200) :
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_115200;
+            uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_115200;
+            break;
+        case (230400) :
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_230400;
+            uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_230400;
+            break;
+        case (460800) :
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_460800;
+            uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_460800;
+            break;
+        case (921600) :
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_921600;
+            uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_921600;
+            break;
+        default :
+            baud_rate_not_found = 1;
+            break;
+    }
+    uart->LINCR1.B.INIT = 0;
+    if (baud_rate_not_found)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+int Set_UART_0_INTC_Handler(INTCInterruptFn handler_rxi, INTCInterruptFn handler_txi, INTCInterruptFn handler_err)
+{
     INTC_InstallINTCInterruptHandler((INTCInterruptFn)handler_rxi, IRQ_BSP_RS232_RXI, INTC_PRIORITY_BSP_RS232_RXI);
     INTC_InstallINTCInterruptHandler((INTCInterruptFn)handler_txi, IRQ_BSP_RS232_TXI, INTC_PRIORITY_BSP_RS232_TXI);
-    INTC_InstallINTCInterruptHandler((INTCInterruptFn)handler_err, IRQ_BSP_RS232_ERR, INTC_PRIORITY_BSP_RS232_ERR);
+    INTC_InstallINTCInterruptHandler((INTCInterruptFn)handler_err, IRQ_BSP_RS232_ERR, INTC_PRIORITY_BSP_RS232_ERR);    
+    return 0;
+}
+
+
+int Enable_UART_RXI(volatile struct LINFLEX_tag *uart)
+{
+    uart->LINIER.B.DRIE = 1;
+    return 0;
+}
+
+
+int Disable_UART_RXI(volatile struct LINFLEX_tag *uart)
+{
+    uart->LINIER.B.DRIE = 0;
+    return 0;
+}
+
+
+int Enable_UART_TXI(volatile struct LINFLEX_tag *uart)
+{
+    uart->LINIER.B.DTIE = 1;
+    return 0;
+}
+
+
+int Disable_UART_TXI(volatile struct LINFLEX_tag *uart)
+{
+    uart->LINIER.B.DTIE = 0;
+    return 0;
 }
 
 
