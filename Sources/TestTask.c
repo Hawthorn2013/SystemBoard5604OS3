@@ -202,19 +202,38 @@ void Test2Task(void *p_arg)
 void Test3Task(void *p_arg)
 {
     const uint8_t list[] = "abcdefghijklmnopqrstuvwxyz";
+    uint8_t length_list[1] = {0x01};
     INT8U err;
     volatile int cnt = 0;
+    int send_length = 1;
     
     (void) p_arg;
     Sem_UART_0_TXI = OSSemCreate(1);
     while(1)
     {
+        int remain = sizeof(list)-1 - cnt;
+        OSSemPend(Sem_UART_0_TXI, 0, &err);
+        length_list[0] = (uint8_t)send_length + '0';
+        Post_Date_to_UART_Buffer(&LINFLEX_0, length_list, 1);
         OSSemPend(Sem_UART_0_TXI, 0, &err);
         LED3 = ~LED3;
-        LINFLEX_0.BDRL.B.DATA0 = list[cnt++];
+        if (remain >= send_length)
+        {
+            Post_Date_to_UART_Buffer(&LINFLEX_0, &(list[cnt]), send_length);
+            cnt += send_length;
+        }
+        else
+        {
+            Post_Date_to_UART_Buffer(&LINFLEX_0, &(list[cnt]), remain);
+            cnt += remain;
+        }
         if (cnt >= sizeof(list)-1)
         {
             cnt = 0;
+        }
+        if (++send_length > UART_TDFL_MAX)
+        {
+            send_length = 1;
         }
     }
 }

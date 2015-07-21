@@ -341,6 +341,34 @@ int Disable_UART_TXI(volatile struct LINFLEX_tag *uart)
 }
 
 
+/*
+ * Success return 0
+ */
+int Post_Date_to_UART_Buffer(volatile struct LINFLEX_tag *uart, const uint8_t data[], int cnt)
+{
+    uint8_t send[UART_TDFL_MAX] = {0x00, 0x00, 0x00, 0x00};
+
+    if (cnt > UART_TDFL_MAX || cnt < 1)
+    {
+        return 1;
+    }
+    uart->UARTCR.B.TDFL = cnt - 1;
+    switch (cnt)
+    {
+    case 4 :
+        send[0] = data[3];
+    case 3 :
+        send[1] = data[2];
+    case 2 :
+        send[2] = data[1];
+    case 1 :
+        send[3] = data[0];
+    }
+    uart->BDRL.R = *(uint32_t *)send;
+    return 0;
+}
+
+
 void INTC_Handler_BSP_UART_0_RXI(void)
 {
 //    uint8_t rev_ch;

@@ -120,6 +120,8 @@
 #define INTC_PRIORITY_BSP_RS232_ERR                 (2)
 #define PCR_BSP_RS232_TX                            (18)
 #define PCR_BSP_RS232_RX                            (19)
+#define UART_TDFL_MAX                               (4)
+#define UART_RDFL_MAX                               (4)
 
 /*
 **************************************************************************************************************
@@ -202,6 +204,7 @@ extern int      Enable_UART_RXI(volatile struct LINFLEX_tag *uart);
 extern int      Disable_UART_RXI(volatile struct LINFLEX_tag *uart);
 extern int      Enable_UART_TXI(volatile struct LINFLEX_tag *uart);
 extern int      Disable_UART_TXI(volatile struct LINFLEX_tag *uart);
+extern int Post_Date_to_UART_Buffer(volatile struct LINFLEX_tag *uart, const uint8_t data[], int cnt);
 extern void     INTC_Handler_BSP_UART_0_RXI(void);
 extern void     INTC_Handler_BSP_UART_0_TXI(void);
 extern void     INTC_Handler_BSP_UART_0_ERR(void);
