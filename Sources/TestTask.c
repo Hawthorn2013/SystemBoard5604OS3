@@ -177,7 +177,7 @@ void Test1Task(void *p_arg)
     Enable_IRQ();
     while(1)
     {
-        LED1 = ~LED1;
+//        LED1 = ~LED1;
         Delay_ms(30);
         if (++cnt >= 30)
         {
@@ -193,7 +193,7 @@ void Test2Task(void *p_arg)
 	(void) p_arg;
 	while(1)
 	{
-        LED2 = ~LED2;
+//        LED2 = ~LED2;
         Delay_ms(60);
 	}
 }
@@ -235,5 +235,29 @@ void Test3Task(void *p_arg)
         {
             send_length = 1;
         }
+    }
+}
+
+
+void Test4Task(void *p_arg)
+{
+    INT8U err, err2;
+    
+    (void) p_arg;
+    Sem_UART_0_RXI = OSSemCreate(0);
+    Sem_UART_0_TXI = OSSemCreate(1);
+//    Enable_UART_RXI(&LINFLEX_0);
+//    Enable_UART_TXI(&LINFLEX_0);
+    while(1)
+    {
+        LED1 = 1;
+        LED2 = 1;
+        LED3 = 1;
+        OSSemPend(Sem_UART_0_RXI, 0, &err);
+        LED1 = 0;
+        OSSemPend(Sem_UART_0_TXI, 0, &err2);
+        LED2 = 0;
+        Post_Date_to_UART_Buffer(&LINFLEX_0, UART_Buffer_0.data, UART_Buffer_0.length);
+        LED3 = 0;
     }
 }

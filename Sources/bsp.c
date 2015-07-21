@@ -16,7 +16,7 @@
 
 
 OS_EVENT *Sem_UART_0_TXI, *Sem_UART_0_RXI;
-
+struct UART_Buffer UART_Buffer_0;
 
 /*
  * Init pin to GPIO
@@ -213,7 +213,8 @@ void INTC_Handler_BSP_S3_S4(void)
 int Init_UART_0_Ex(void)
 {
     Init_UART(&LINFLEX_0);
-    Set_UART_Baud_Rate(&LINFLEX_0, 115200);
+//    Set_UART_Baud_Rate(&LINFLEX_0, 115200);
+//    Set_UART_RDFL(&LINFLEX_0, UART_RDFL_MAX);
     Set_UART_0_Pin();
     Set_UART_0_INTC_Handler(INTC_Handler_BSP_UART_0_RXI, INTC_Handler_BSP_UART_0_TXI, INTC_Handler_BSP_UART_0_ERR);
     Enable_UART_RXI(&LINFLEX_0);
@@ -230,6 +231,17 @@ int Init_UART(volatile struct LINFLEX_tag *uart)
     uart->UARTCR.B.UART = 1;
     uart->UARTCR.R = 0x00000033;
     uart->LINCR1.B.INIT = 0;
+    return 0;
+}
+
+
+int Set_UART_RDFL(volatile struct LINFLEX_tag *uart, int rdfl)
+{
+    if (rdfl > UART_RDFL_MAX)
+    {
+        return 1;
+    }
+    uart->UARTCR.B.RDFL = rdfl;
     return 0;
 }
 
@@ -371,11 +383,21 @@ int Post_Date_to_UART_Buffer(volatile struct LINFLEX_tag *uart, const uint8_t da
 
 void INTC_Handler_BSP_UART_0_RXI(void)
 {
-//    uint8_t rev_ch;
-//
-//    while(!LINFLEX_0.UARTSR.B.DRF){}
-//    rev_ch = (uint8_t)LINFLEX_0.BDRM.B.DATA4;
+    uint8_t data[UART_RDFL_MAX] = {0x00, 0x00, 0x00, 0x00};
+
+    *(uint32_t *)data = (uint8_t)LINFLEX_0.BDRM.R;
     LINFLEX_0.UARTSR.B.DRF = 1;
+    if (OSSemAccept(Sem_UART_0_RXI))
+    {
+        OSSemPost(Sem_UART_0_RXI);
+        return;
+    }
+    UART_Buffer_0.length = (int)(LINFLEX_0.UARTCR.B.RDFL) + 1;
+    UART_Buffer_0.data[0] = data[UART_RDFL_MAX -1 - 0];
+    UART_Buffer_0.data[1] = data[UART_RDFL_MAX -1 - 1];
+    UART_Buffer_0.data[2] = data[UART_RDFL_MAX -1 - 2];
+    UART_Buffer_0.data[3] = data[UART_RDFL_MAX -1 - 3];
+    OSSemPost(Sem_UART_0_RXI);
 }
 
 

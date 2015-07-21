@@ -16,7 +16,7 @@
 #define TEST1_TASK_PRIO (10)
 #define TEST2_TASK_PRIO (12)
 #define TEST3_TASK_PRIO (7)
-#define TEST4_TASK_PRIO (14)
+#define TEST4_TASK_PRIO (6)
 
 
 /*防止重复定义,未成功

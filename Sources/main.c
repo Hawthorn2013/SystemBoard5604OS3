@@ -24,10 +24,10 @@ int main(void) {
                    (void *)0,
                    &Test2TaskStk[Test2_TASK_STK_SIZE-1],
                    TEST2_TASK_PRIO );
-    OSTaskCreate(  Test3Task,
+    OSTaskCreate(  Test4Task,
                        (void *)0,
-                       &Test3TaskStk[Test3_TASK_STK_SIZE-1],
-                       TEST3_TASK_PRIO );
+                       &Test4TaskStk[Test4_TASK_STK_SIZE-1],
+                       TEST4_TASK_PRIO );
     OSStart();	/* Start multitasking (i.e. give control to uC/OS-II)       */
 
 

@@ -194,9 +194,18 @@ extern void  INTC_Handler_BSP_S3_S4(void);
 **************************************************************************************************************
 */
 
+extern struct UART_Buffer
+{
+    int length;
+    int used;
+    uint8_t data[UART_RDFL_MAX];
+};
+
+extern struct UART_Buffer UART_Buffer_0;
 extern OS_EVENT *Sem_UART_0_TXI, *Sem_UART_0_RXI;
 extern int      Init_UART_0_Ex(void);
 extern int      Init_UART(volatile struct LINFLEX_tag *uart);
+extern int Set_UART_RDFL(volatile struct LINFLEX_tag *uart, int rdfl);
 extern int      Set_UART_0_Pin(void);
 extern int      Set_UART_Baud_Rate(volatile struct LINFLEX_tag *uart, int32_t baudrate);
 extern int      Set_UART_0_INTC_Handler(INTCInterruptFn handler_rxi, INTCInterruptFn handler_txi, INTCInterruptFn handler_err);
