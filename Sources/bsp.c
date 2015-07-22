@@ -213,12 +213,10 @@ void INTC_Handler_BSP_S3_S4(void)
 int Init_UART_0_Ex(void)
 {
     Init_UART(&LINFLEX_0);
-//    Set_UART_Baud_Rate(&LINFLEX_0, 115200);
-//    Set_UART_RDFL(&LINFLEX_0, UART_RDFL_MAX);
+    Set_UART_Baud_Rate(&LINFLEX_0, 115200);
+    Set_UART_RDFL(&LINFLEX_0, UART_RDFL_MAX);
     Set_UART_0_Pin();
     Set_UART_0_INTC_Handler(INTC_Handler_BSP_UART_0_RXI, INTC_Handler_BSP_UART_0_TXI, INTC_Handler_BSP_UART_0_ERR);
-    Enable_UART_RXI(&LINFLEX_0);
-    Enable_UART_TXI(&LINFLEX_0);
 }
 
 

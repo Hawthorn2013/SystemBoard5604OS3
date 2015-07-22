@@ -246,8 +246,8 @@ void Test4Task(void *p_arg)
     (void) p_arg;
     Sem_UART_0_RXI = OSSemCreate(0);
     Sem_UART_0_TXI = OSSemCreate(1);
-//    Enable_UART_RXI(&LINFLEX_0);
-//    Enable_UART_TXI(&LINFLEX_0);
+    Enable_UART_RXI(&LINFLEX_0);
+    Enable_UART_TXI(&LINFLEX_0);
     while(1)
     {
         OSSemPend(Sem_UART_0_RXI, 0, &err);
