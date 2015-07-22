@@ -250,14 +250,12 @@ void Test4Task(void *p_arg)
 //    Enable_UART_TXI(&LINFLEX_0);
     while(1)
     {
-        LED1 = 1;
-        LED2 = 1;
-        LED3 = 1;
         OSSemPend(Sem_UART_0_RXI, 0, &err);
-        LED1 = 0;
-        OSSemPend(Sem_UART_0_TXI, 0, &err2);
-        LED2 = 0;
+        OSSemPend(Sem_UART_0_TXI, 2, &err2);
+        if (OS_TIMEOUT == err2)
+        {
+            UART_Buffer_0.DTF_err_cnt++;
+        }
         Post_Date_to_UART_Buffer(&LINFLEX_0, UART_Buffer_0.data, UART_Buffer_0.length);
-        LED3 = 0;
     }
 }

@@ -198,6 +198,7 @@ extern struct UART_Buffer
 {
     int length;
     int used;
+    int DTF_err_cnt;
     uint8_t data[UART_RDFL_MAX];
 };
 
