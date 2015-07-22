@@ -213,7 +213,26 @@ void INTC_Handler_BSP_S3_S4(void)
 int Init_UART_0_Ex(void)
 {
     Init_UART(&LINFLEX_0);
-    Set_UART_Baud_Rate(&LINFLEX_0, 115200);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 121);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 122);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 123);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 487);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 488);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 489);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 2400);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 9600);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 10417);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 19200);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 57600);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 115200);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 230400);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 460800);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 666666);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 666667);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 666668);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 2666666);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 2666667);
+    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 2666668);
     Set_UART_RDFL(&LINFLEX_0, UART_RDFL_MAX);
     Set_UART_0_Pin();
     Set_UART_0_INTC_Handler(INTC_Handler_BSP_UART_0_RXI, INTC_Handler_BSP_UART_0_TXI, INTC_Handler_BSP_UART_0_ERR);
@@ -224,8 +243,8 @@ int Init_UART(volatile struct LINFLEX_tag *uart)
 {
     uart->LINCR1.B.INIT = 1;
     uart->LINCR1.R = 0x00000015;
-    uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_9600;
     uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_9600;
+    uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_9600;
     uart->UARTCR.B.UART = 1;
     uart->UARTCR.R = 0x00000033;
     uart->LINCR1.B.INIT = 0;
@@ -263,40 +282,40 @@ int Set_UART_Baud_Rate(volatile struct LINFLEX_tag *uart, int32_t baudrate)
     switch (baudrate)
     {
         case (2400) :
-            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_2400;
             uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_2400;
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_2400;
             break;
         case (9600) :
-            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_9600;
             uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_9600;
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_9600;
             break;
         case (10417) :
-            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_10417;
             uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_10417;
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_10417;
             break;
         case (19200) :
-            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_19200;
             uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_19200;
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_19200;
             break;
         case (57600) :
-            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_57600;
             uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_57600;
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_57600;
             break;
         case (115200) :
-            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_115200;
             uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_115200;
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_115200;
             break;
         case (230400) :
-            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_230400;
             uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_230400;
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_230400;
             break;
         case (460800) :
-            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_460800;
             uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_460800;
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_460800;
             break;
         case (921600) :
-            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_921600;
             uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_921600;
+            uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_921600;
             break;
         default :
             baud_rate_not_found = 1;
@@ -311,6 +330,53 @@ int Set_UART_Baud_Rate(volatile struct LINFLEX_tag *uart, int32_t baudrate)
     {
         return 0;
     }
+}
+
+
+int Set_UART_Baud_Rate_Ex(volatile struct LINFLEX_tag *uart, int32_t baudrate)
+{
+    float lfdiv, f_linfbrr;
+    int linfbrr, linibrr;
+    
+    if (baudrate > F_PERIPH_SET_1_CLK / 24 + 1 || baudrate < (int)((float)F_PERIPH_SET_1_CLK / 16 / 8191.9375))
+    {
+        return 1;
+    }
+    uart->LINCR1.B.INIT = 1;
+    lfdiv = (float)F_PERIPH_SET_1_CLK / 16 / baudrate;
+    linibrr = (int)lfdiv;
+    f_linfbrr = (lfdiv - linibrr) * 16;
+    linfbrr = (int)f_linfbrr;
+    if (linfbrr >= 15)
+    {
+        if ((f_linfbrr - linfbrr) * 16 >= 15.5)
+        {
+            linfbrr = 0;
+            linibrr++;
+        }
+        else
+        {
+            linfbrr = 15;
+        }
+    }
+    else if (f_linfbrr - linfbrr >= 0.5)
+    {
+        linfbrr++;
+    }
+    if (linibrr > 8191)
+    {
+        linibrr = 8191;
+        linfbrr = 15;
+    }
+    else if (linfbrr <= 8 && linibrr <= 1)
+    {
+        linfbrr = 8;
+        linibrr = 1;
+    }
+    uart->LINFBRR.B.DIV_F = linfbrr;
+    uart->LINIBRR.B.DIV_M = linibrr;
+    uart->LINCR1.B.INIT = 1;
+    return 0;
 }
 
 

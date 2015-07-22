@@ -122,6 +122,7 @@
 #define PCR_BSP_RS232_RX                            (19)
 #define UART_TDFL_MAX                               (4)
 #define UART_RDFL_MAX                               (4)
+#define F_PERIPH_SET_1_CLK                          (16000000L)
 
 /*
 **************************************************************************************************************
@@ -202,19 +203,20 @@ extern struct UART_Buffer
     uint8_t data[UART_RDFL_MAX];
 };
 
-extern struct UART_Buffer UART_Buffer_0;
+extern struct   UART_Buffer UART_Buffer_0;
 extern OS_EVENT *Sem_UART_0_TXI, *Sem_UART_0_RXI;
 extern int      Init_UART_0_Ex(void);
 extern int      Init_UART(volatile struct LINFLEX_tag *uart);
-extern int Set_UART_RDFL(volatile struct LINFLEX_tag *uart, int rdfl);
+extern int      Set_UART_RDFL(volatile struct LINFLEX_tag *uart, int rdfl);
 extern int      Set_UART_0_Pin(void);
 extern int      Set_UART_Baud_Rate(volatile struct LINFLEX_tag *uart, int32_t baudrate);
+extern int      Set_UART_Baud_Rate_Ex(volatile struct LINFLEX_tag *uart, int32_t baudrate);
 extern int      Set_UART_0_INTC_Handler(INTCInterruptFn handler_rxi, INTCInterruptFn handler_txi, INTCInterruptFn handler_err);
 extern int      Enable_UART_RXI(volatile struct LINFLEX_tag *uart);
 extern int      Disable_UART_RXI(volatile struct LINFLEX_tag *uart);
 extern int      Enable_UART_TXI(volatile struct LINFLEX_tag *uart);
 extern int      Disable_UART_TXI(volatile struct LINFLEX_tag *uart);
-extern int Post_Date_to_UART_Buffer(volatile struct LINFLEX_tag *uart, const uint8_t data[], int cnt);
+extern int      Post_Date_to_UART_Buffer(volatile struct LINFLEX_tag *uart, const uint8_t data[], int cnt);
 extern void     INTC_Handler_BSP_UART_0_RXI(void);
 extern void     INTC_Handler_BSP_UART_0_TXI(void);
 extern void     INTC_Handler_BSP_UART_0_ERR(void);
