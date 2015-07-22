@@ -242,6 +242,9 @@ void Test3Task(void *p_arg)
 void Test4Task(void *p_arg)
 {
     INT8U err, err2;
+#if OS_CRITICAL_METHOD == 3                           /* Allocate storage for CPU status register */
+    OS_CPU_SR  cpu_sr = 0;
+#endif
     
     (void) p_arg;
     Sem_UART_0_RXI = OSSemCreate(0);
@@ -252,10 +255,12 @@ void Test4Task(void *p_arg)
     {
         OSSemPend(Sem_UART_0_RXI, 0, &err);
         OSSemPend(Sem_UART_0_TXI, 2, &err2);
+        OS_ENTER_CRITICAL();
         if (OS_TIMEOUT == err2)
         {
             UART_Buffer_0.DTF_err_cnt++;
         }
         Post_Date_to_UART_Buffer(&LINFLEX_0, UART_Buffer_0.data, UART_Buffer_0.length);
+        OS_EXIT_CRITICAL();
     }
 }
