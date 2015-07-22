@@ -122,7 +122,7 @@
 #define PCR_BSP_RS232_RX                            (19)
 #define UART_TDFL_MAX                               (4)
 #define UART_RDFL_MAX                               (4)
-#define F_PERIPH_SET_1_CLK                          (64000000L)
+#define F_PERIPH_SET_1_CLK                          (16000000L)
 
 /*
 **************************************************************************************************************

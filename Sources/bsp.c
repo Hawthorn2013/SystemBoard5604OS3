@@ -321,17 +321,20 @@ int Set_UART_Baud_Rate_Ex(volatile struct LINFLEX_tag *uart, int32_t baudrate)
     
     if (baudrate > F_PERIPH_SET_1_CLK / 24 + 1)
     {
+        uart->LINCR1.B.INIT = 1;
         uart->LINFBRR.B.DIV_F = 0b1000;
         uart->LINIBRR.B.DIV_M = 0b0000000000001;
+        uart->LINCR1.B.INIT = 0;
         return 1;
     }
     else if (baudrate < (int)((float)F_PERIPH_SET_1_CLK / 16 / 8191.9375))
     {
+        uart->LINCR1.B.INIT = 1;
         uart->LINFBRR.B.DIV_F = 0b1111;
         uart->LINIBRR.B.DIV_M = 0b1111111111111;
+        uart->LINCR1.B.INIT = 0;
         return 2;
     }
-    uart->LINCR1.B.INIT = 1;
     lfdiv = (float)F_PERIPH_SET_1_CLK / 16 / baudrate;
     linibrr = (int)lfdiv;
     f_linfbrr = (lfdiv - linibrr) * 16;
@@ -362,9 +365,10 @@ int Set_UART_Baud_Rate_Ex(volatile struct LINFLEX_tag *uart, int32_t baudrate)
         linfbrr = 8;
         linibrr = 1;
     }
+    uart->LINCR1.B.INIT = 1;
     uart->LINFBRR.B.DIV_F = linfbrr;
     uart->LINIBRR.B.DIV_M = linibrr;
-    uart->LINCR1.B.INIT = 1;
+    uart->LINCR1.B.INIT = 0;
     return 0;
 }
 
