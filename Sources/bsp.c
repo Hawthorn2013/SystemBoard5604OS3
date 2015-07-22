@@ -213,26 +213,7 @@ void INTC_Handler_BSP_S3_S4(void)
 int Init_UART_0_Ex(void)
 {
     Init_UART(&LINFLEX_0);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 121);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 122);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 123);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 487);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 488);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 489);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 2400);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 9600);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 10417);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 19200);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 57600);
     Set_UART_Baud_Rate_Ex(&LINFLEX_0, 115200);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 230400);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 460800);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 666666);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 666667);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 666668);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 2666666);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 2666667);
-    Set_UART_Baud_Rate_Ex(&LINFLEX_0, 2666668);
     Set_UART_RDFL(&LINFLEX_0, UART_RDFL_MAX);
     Set_UART_0_Pin();
     Set_UART_0_INTC_Handler(INTC_Handler_BSP_UART_0_RXI, INTC_Handler_BSP_UART_0_TXI, INTC_Handler_BSP_UART_0_ERR);
@@ -243,8 +224,8 @@ int Init_UART(volatile struct LINFLEX_tag *uart)
 {
     uart->LINCR1.B.INIT = 1;
     uart->LINCR1.R = 0x00000015;
-    uart->LINFBRR.B.DIV_F = LINFLEX_DIV_F_BAUD_RATE_9600;
-    uart->LINIBRR.B.DIV_M = LINFLEX_DIV_M_BAUD_RATE_9600;
+    uart->LINFBRR.B.DIV_F = 0b1111;
+    uart->LINIBRR.B.DIV_M = 0b1111111111111;
     uart->UARTCR.B.UART = 1;
     uart->UARTCR.R = 0x00000033;
     uart->LINCR1.B.INIT = 0;
