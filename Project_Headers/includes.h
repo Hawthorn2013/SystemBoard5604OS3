@@ -21,4 +21,5 @@
 #include      "app_cfg.h"
 #include      "ucos_ii.h"
 #include      "bsp.h"
+#include      "oled.h"
 #include	  "TestTask.h"
