@@ -14,6 +14,7 @@
 
 #include      <stdarg.h>
 
+#define NULL ((void *)0)
 
 #include      "MPC5604B.h"
 #include      "IntcInterrupts.h"

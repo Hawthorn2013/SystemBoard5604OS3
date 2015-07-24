@@ -134,6 +134,66 @@
 #define IRQ_BSP_OSTickISR                           (60)
 #define PIT_CH_BSP_OSTickISR                        (1)
 
+/*
+**************************************************************************************************************
+*                                            DSPI
+**************************************************************************************************************
+*/
+
+#define IRQ_DSPI_1_SR_TFUF_RFOF                     (94)
+#define IRQ_DSPI_1_SR_EOQF                          (95)
+#define IRQ_DSPI_1_SR_TFFF                          (96)
+#define IRQ_DSPI_1_SR_TCF                           (97)
+#define IRQ_DSPI_1_SR_RFDF                          (98)
+#define INTC_PRIORITY_DSPI_1_SR_TFUF_RFOF           (6)
+#define INTC_PRIORITY_DSPI_1_SR_EOQF                (6)
+#define INTC_PRIORITY_DSPI_1_SR_TFFF                (6)
+#define INTC_PRIORITY_DSPI_1_SR_TCF                 (6)
+#define INTC_PRIORITY_DSPI_1_SR_RFDF                (6)
+#define DSPI_PUSHR_MAX_BYTE_AMOUNT                  (2)
+#define DSPI_TXFR_AMOUNT                            (4)
+#define DSPI_ASYNC_SEND_DATA_MAX_LENGTH             ((DSPI_PUSHR_MAX_BYTE_AMOUNT) * (DSPI_TXFR_AMOUNT))
+#define DSPI_CTAR_FMSZ_2BYTES                       (0b1111)
+#define DSPI_CTAR_FMSZ_1BYTE                        (0b0111)
+#define DSPI_1_MUTEX_PRIO                           (5)
+extern struct DSPI_Device_Data
+{
+    OS_EVENT *Mut_DSPI_1;
+    int is_open;
+    void(*CB_TX_Complete)(void);
+    union {
+        uint32_t R;
+        struct {
+            uint32_t DBR:1;
+            uint32_t FMSZ:4;
+            uint32_t CPOL:1;
+            uint32_t CPHA:1;
+            uint32_t LSBFE:1;
+            uint32_t PCSSCK:2;
+            uint32_t PASC:2;
+            uint32_t PDT:2;
+            uint32_t PBR:2;
+            uint32_t CSSCK:4;
+            uint32_t ASC:4;
+            uint32_t DT:4;
+            uint32_t BR:4;
+        } B;
+    } CTAR;
+    union {
+        uint32_t R;
+        struct {
+            uint32_t CONT:1;
+            uint32_t CTAS:3;
+            uint32_t EOQ:1;
+            uint32_t CTCNT:1;
+              uint32_t:4;
+            uint32_t PCS:6;
+            uint32_t TXDATA:16;
+        } B;
+    } PUSHR;
+    volatile struct DSPI_tag *dspi;
+} DSPI_1_Device_Data;
+
 /*$PAGE*/
 /*
 *********************************************************************************************************
@@ -229,6 +289,36 @@ extern void     INTC_Handler_BSP_UART_0_ERR(void);
 
 extern void Init_OSTickISR(void);
 extern void INTC_Handler_OSTickISR(void);
+
+/*
+**************************************************************************************************************
+*                                            DSPI
+**************************************************************************************************************
+*/
+
+extern int Init_SPI(volatile struct DSPI_tag *dspi);
+extern int Init_DSPI_1(void);
+extern int Set_DSPI_1_Pin(void);
+extern void INTC_Handler_DSPI_1_SR_TFUF_RFOF(void);
+extern void INTC_Handler_DSPI_1_SR_EOQF(void);
+extern void INTC_Handler_DSPI_1_SR_TFFF(void);
+extern void INTC_Handler_DSPI_1_SR_TCF(void);
+extern void INTC_Handler_DSPI_1_SR_RFDF(void);
+extern int Enable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi);
+extern int Disable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi);
+extern int Enable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi);
+extern int Disable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi);
+extern int Enable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi);
+extern int Disable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi);
+extern int Enable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi);
+extern int Disable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi);
+extern int Enable_INTC_DSPI_SR_SR_TCF(volatile struct DSPI_tag *dspi);
+extern int Disable_INTC_DSPI_SR_SR_TCF(volatile struct DSPI_tag *dspi);
+extern int Enable_INTC_DSPI_SR_SR_RFDF(volatile struct DSPI_tag *dspi);
+extern int Disable_INTC_DSPI_SR_SR_RFDF(volatile struct DSPI_tag *dspi);
+extern int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int lsbfe,int pcssck,int pasc,int pdt,int pbr,int cssck,int asc,int dt,int br);
+extern int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs);
+extern int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt);
 
 /*
 *********************************************************************************************************

@@ -17,6 +17,9 @@
 
 OS_EVENT *Sem_UART_0_TXI, *Sem_UART_0_RXI;
 struct UART_Buffer UART_Buffer_0;
+OS_EVENT Sem_DSPI_1;
+struct DSPI_Device_Data DSPI_1_Device_Data;
+
 
 /*
  * Init pin to GPIO
@@ -508,6 +511,223 @@ void INTC_Handler_OSTickISR(void)
     PIT.CH[PIT_CH_BSP_OSTickISR].TFLG.B.TIF = 1;   // MPC56xxB/P/S: Clear PIT 1 flag by writing 1
     OSTickISR();
     PIT.PITMCR.R=0x00000000;
+}
+
+
+int Init_SPI(volatile struct DSPI_tag *dspi)
+{
+    dspi->MCR.R = 0x803f0001;
+    dspi->MCR.B.HALT = 0x0;
+}
+
+
+int Init_DSPI_1(void)
+{
+    INT8U err1 = 0;
+    
+    Init_SPI(&DSPI_1);
+    Set_DSPI_1_Pin();
+    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TFUF_RFOF, IRQ_DSPI_1_SR_TFUF_RFOF, INTC_PRIORITY_DSPI_1_SR_TFUF_RFOF);
+    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_EOQF, IRQ_DSPI_1_SR_EOQF, INTC_PRIORITY_DSPI_1_SR_EOQF);
+    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TFFF, IRQ_DSPI_1_SR_TFFF, INTC_PRIORITY_DSPI_1_SR_TFFF);
+    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TCF, IRQ_DSPI_1_SR_TCF, INTC_PRIORITY_DSPI_1_SR_TCF);
+    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_RFDF, IRQ_DSPI_1_SR_RFDF, INTC_PRIORITY_DSPI_1_SR_RFDF);
+    DSPI_1_Device_Data.Mut_DSPI_1 = OSMutexCreate(DSPI_1_MUTEX_PRIO, &err1);
+    DSPI_1_Device_Data.CB_TX_Complete = NULL;
+    DSPI_1_Device_Data.dspi = &DSPI_1;
+}
+
+
+int Set_DSPI_1_Pin(void)
+{
+    SIU.PCR[34].R = 0x0604; //PC2 SCK_1
+    //SIU.PSMI[7].R = 0;    //SCK_1 PCR[34]
+    SIU.PCR[35].R = 0x0503; //PC3 CS0_1
+    //SIU.PSMI[9].R = 0;    //CS0_1 PCR[35]
+    SIU.PCR[36].R = 0x0104; //PC4 SIN_1
+    //SIU.PSMI[8].R = 0;    //SIN_1 PCR[36]
+    SIU.PCR[62].R = 0x0604; //PD14 CS1_1
+    SIU.PCR[63].R = 0x0604; //PD15 CS2_1
+    SIU.PCR[67].R = 0x0A04; //PE3 SOUT_1
+    SIU.PCR[74].R = 0x0A04; //PE10 CS3_1
+    SIU.PCR[75].R = 0x0A04; //PE11 CS4_1
+}
+
+
+void INTC_Handler_DSPI_1_SR_TFUF_RFOF(void)
+{
+    
+}
+
+
+void INTC_Handler_DSPI_1_SR_EOQF(void)
+{
+    DSPI_1.SR.B.EOQF = 1;
+    DSPI_1_Device_Data.CB_TX_Complete();
+}
+
+
+void INTC_Handler_DSPI_1_SR_TFFF(void)
+{
+    
+}
+
+
+void INTC_Handler_DSPI_1_SR_TCF(void)
+{
+    
+}
+
+
+void INTC_Handler_DSPI_1_SR_RFDF(void)
+{
+    
+}
+
+
+int Enable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.TFUFRE = 1;
+}
+
+
+int Disable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.TFUFRE = 0;
+}
+
+
+int Enable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.RFOFRE = 1;
+}
+
+
+int Disable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.RFOFRE = 0;
+}
+
+
+int Enable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.EOQFRE = 1;
+}
+
+
+int Disable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.EOQFRE = 0;
+}
+
+
+int Enable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.TFFFRE = 1;
+}
+
+
+int Disable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.TFFFRE = 0;
+}
+
+
+int Enable_INTC_DSPI_SR_SR_TCF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.TCFRE = 1;
+}
+
+
+int Disable_INTC_DSPI_SR_SR_TCF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.TCFRE = 0;
+}
+
+
+int Enable_INTC_DSPI_SR_SR_RFDF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.RFDFRE = 1;
+}
+
+
+int Disable_INTC_DSPI_SR_SR_RFDF(volatile struct DSPI_tag *dspi)
+{
+    dspi->RSER.B.RFDFRE = 0;
+}
+
+
+int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int lsbfe,int pcssck,int pasc,int pdt,int pbr,int cssck,int asc,int dt,int br)
+{
+    dev->CTAR.B.DBR = dbr;
+    dev->CTAR.B.FMSZ = DSPI_CTAR_FMSZ_2BYTES;
+    dev->CTAR.B.CPOL = cpol;
+    dev->CTAR.B.CPHA = cpha;
+    dev->CTAR.B.LSBFE = lsbfe;
+    dev->CTAR.B.PCSSCK = pcssck;
+    dev->CTAR.B.PASC = pasc;
+    dev->CTAR.B.PDT = pdt;
+    dev->CTAR.B.PBR = pbr;
+    dev->CTAR.B.CSSCK = cssck;
+    dev->CTAR.B.ASC = asc;
+    dev->CTAR.B.DT = dt;
+    dev->CTAR.B.BR = br;
+    return 0;
+}
+
+
+int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs)
+{
+    dev->PUSHR.B.CONT = cont;
+    dev->PUSHR.B.CTAS = 0;
+    dev->PUSHR.B.EOQ = 0;
+    dev->PUSHR.B.PCS = pcs;
+    return 0;
+}
+
+
+int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
+{
+    int quotient, remainder, i;
+    uint32_t pushr;
+    
+    pushr = 0xffff0000;
+    if (dev->dspi->SR.B.TXCTR)
+    {
+        return 1;
+    }
+    if (cnt > DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
+    {
+        return 2;
+    }
+    quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
+    remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
+    dev->CTAR.B.FMSZ = DSPI_CTAR_FMSZ_2BYTES;
+    dev->dspi->CTAR[0].R = dev->CTAR.R;
+    dev->CTAR.B.FMSZ = DSPI_CTAR_FMSZ_1BYTE;
+    dev->dspi->CTAR[1].R = dev->CTAR.R;
+    dev->PUSHR.B.CTAS = 0;
+    for (i = 0; i < quotient; i++)
+    {
+        if (!remainder && i == quotient - 1)
+        {
+            dev->PUSHR.B.EOQ = 1;
+        }
+        else
+        {
+            dev->PUSHR.B.EOQ = 0;
+        }
+        dev->PUSHR.B.TXDATA = *((uint16_t *)(data) +i);
+        dev->dspi->PUSHR.R = dev->PUSHR.R;
+    }
+    if (remainder)
+    {
+        dev->PUSHR.B.EOQ = 1;
+        dev->PUSHR.B.CTAS = 1;
+        dev->PUSHR.B.TXDATA = (uint32_t)*(data + i * DSPI_PUSHR_MAX_BYTE_AMOUNT);
+        dev->dspi->PUSHR.R = dev->PUSHR.R;
+    }
+    return 0;
 }
 
 
