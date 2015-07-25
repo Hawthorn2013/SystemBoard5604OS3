@@ -9,10 +9,10 @@
 #define TESTTASK_H_
 
 
-#define Test1_TASK_STK_SIZE (512)
-#define Test2_TASK_STK_SIZE (512)
-#define Test3_TASK_STK_SIZE (512)
-#define Test4_TASK_STK_SIZE (512)
+#define Test1_TASK_STK_SIZE (128)
+#define Test2_TASK_STK_SIZE (128)
+#define Test3_TASK_STK_SIZE (256)
+#define Test4_TASK_STK_SIZE (128)
 #define TEST1_TASK_PRIO (10)
 #define TEST2_TASK_PRIO (12)
 #define TEST3_TASK_PRIO (7)

@@ -158,6 +158,7 @@
 #define DSPI_1_MUTEX_PRIO                           (5)
 extern struct DSPI_Device_Data
 {
+    uint32_t block[32];
     OS_EVENT *Mut_DSPI_1;
     int is_open;
     void(*CB_TX_Complete)(void);
@@ -331,6 +332,7 @@ extern void  Delay_ms(uint32_t ms);
 extern void  Disable_Watchdog(void);
 extern void  Enable_IRQ(void);
 extern void  Init_ModesAndClock(void);
+extern void  Dummy(void *);
 
 
 #ifndef CPU_CONST_FREQ

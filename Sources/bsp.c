@@ -527,11 +527,11 @@ int Init_DSPI_1(void)
     
     Init_SPI(&DSPI_1);
     Set_DSPI_1_Pin();
-    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TFUF_RFOF, IRQ_DSPI_1_SR_TFUF_RFOF, INTC_PRIORITY_DSPI_1_SR_TFUF_RFOF);
+//    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TFUF_RFOF, IRQ_DSPI_1_SR_TFUF_RFOF, INTC_PRIORITY_DSPI_1_SR_TFUF_RFOF);
     INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_EOQF, IRQ_DSPI_1_SR_EOQF, INTC_PRIORITY_DSPI_1_SR_EOQF);
-    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TFFF, IRQ_DSPI_1_SR_TFFF, INTC_PRIORITY_DSPI_1_SR_TFFF);
-    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TCF, IRQ_DSPI_1_SR_TCF, INTC_PRIORITY_DSPI_1_SR_TCF);
-    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_RFDF, IRQ_DSPI_1_SR_RFDF, INTC_PRIORITY_DSPI_1_SR_RFDF);
+//    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TFFF, IRQ_DSPI_1_SR_TFFF, INTC_PRIORITY_DSPI_1_SR_TFFF);
+//    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TCF, IRQ_DSPI_1_SR_TCF, INTC_PRIORITY_DSPI_1_SR_TCF);
+//    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_RFDF, IRQ_DSPI_1_SR_RFDF, INTC_PRIORITY_DSPI_1_SR_RFDF);
     DSPI_1_Device_Data.Mut_DSPI_1 = OSMutexCreate(DSPI_1_MUTEX_PRIO, &err1);
     DSPI_1_Device_Data.CB_TX_Complete = NULL;
     DSPI_1_Device_Data.dspi = &DSPI_1;
@@ -771,4 +771,10 @@ void Enable_IRQ(void)
 {
     INTC.CPR.B.PRI = 0; /* Single Core: Lower INTC's current priority */
     asm(" wrteei 1");   /* Enable external interrupts */
+}
+
+
+void Dummy(void *)
+{
+    
 }

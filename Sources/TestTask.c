@@ -177,13 +177,11 @@ void Test1Task(void *p_arg)
     Enable_IRQ();
     while(1)
     {
-//        LED1 = ~LED1;
-        Delay_ms(30);
-        if (++cnt >= 30)
-        {
-            cnt = 0;
-            OSTimeDly(100);
-        }
+        LED1 = ~LED1;
+        Fill_OLED_PAGE(0, 0, OLED_PAGE_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
+        OSTimeDly(10);
+        Fill_OLED_PAGE(0, 0, OLED_PAGE_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
+        OSTimeDly(10);
 	}
 }
 
@@ -216,7 +214,6 @@ void Test3Task(void *p_arg)
         length_list[0] = (uint8_t)send_length + '0';
         Post_Date_to_UART_Buffer(&LINFLEX_0, length_list, 1);
         OSSemPend(Sem_UART_0_TXI, 0, &err);
-        LED3 = ~LED3;
         if (remain >= send_length)
         {
             Post_Date_to_UART_Buffer(&LINFLEX_0, &(list[cnt]), send_length);
