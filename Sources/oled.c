@@ -33,6 +33,12 @@ int Init_OLED(void)
     INT8U err1 = 0;
     
     OLED_Display_Memory.Mutex_Pages = OSMutexCreate(TASK_PRIO_MUTEX_OLED_DIS_MEM, &err1);
+    Set_DSPI_CTAR(&DSPI_1_Device_Data, OLED_DSPI_CTAR_DBR, OLED_DSPI_CTAR_CPOL, OLED_DSPI_CTAR_CPHA, OLED_DSPI_CTAR_LSBFE, OLED_DSPI_CTAR_PCSSCK, OLED_DSPI_CTAR_PASC, OLED_DSPI_CTAR_PDT, OLED_DSPI_CTAR_PBR, OLED_DSPI_CTAR_CSSCK, OLED_DSPI_CTAR_ASC, OLED_DSPI_CTAR_DT, OLED_DSPI_CTAR_BR);
+    Set_DSPI_PUSHR(&DSPI_1_Device_Data, OLED_DSPI_PUSHR_CONT, OLED_DSPI_PUSHR_PCS);
+    Init_GPIO(OLED_PIN_DC_PCR);
+    Set_GPIO(OLED_PIN_DC_PCR, 1);
+    Init_GPIO(OLED_PIN_RST_PCR);
+    Set_GPIO(OLED_PIN_RST_PCR, 1);
 }
 
 
@@ -92,6 +98,7 @@ void Task_OLED_Flush_Mem(void *p_arg)
         OSMutexPend(DSPI_1_Device_Data.Mut_DSPI_1, 0, &err3);
         DSPI_1_Device_Data.CB_TX_Complete = &Resume_Task_OLED_Flush_Mem;
         Enable_INTC_DSPI_SR_EOQF(DSPI_1_Device_Data.dspi);
+        OLED_PIN_DC = OLED_DC_COMMAND;
         for (i = 0; i < sizeof(cmds); i += DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
         {
             int remain = 0;
@@ -118,7 +125,8 @@ void Task_OLED_Flush_Mem(void *p_arg)
             {
                 int j = 0;
                 uint8_t cmd[] = {0x00, 0x00, 0x00};
-                
+
+                OLED_PIN_DC = OLED_DC_COMMAND;
                 cmd[0] = 0xB0 + (uint8_t)i;
                 cmd[1] = ((OLED_Display_Memory.page[i].dirty_seg_start & 0xF0) >> 4) | 0x10;
                 cmd[2] = (OLED_Display_Memory.page[i].dirty_seg_start & 0x0F);

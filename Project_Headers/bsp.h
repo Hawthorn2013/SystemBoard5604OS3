@@ -188,7 +188,12 @@ extern struct DSPI_Device_Data
             uint32_t EOQ:1;
             uint32_t CTCNT:1;
               uint32_t:4;
-            uint32_t PCS:6;
+            uint32_t PCS5:1;
+            uint32_t PCS4:1;
+            uint32_t PCS3:1;
+            uint32_t PCS2:1;
+            uint32_t PCS1:1;
+            uint32_t PCS0:1;
             uint32_t TXDATA:16;
         } B;
     } PUSHR;
@@ -320,6 +325,7 @@ extern int Disable_INTC_DSPI_SR_SR_RFDF(volatile struct DSPI_tag *dspi);
 extern int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int lsbfe,int pcssck,int pasc,int pdt,int pbr,int cssck,int asc,int dt,int br);
 extern int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs);
 extern int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt);
+extern void Test_DSPI_1_Send_Data(void);
 
 /*
 *********************************************************************************************************

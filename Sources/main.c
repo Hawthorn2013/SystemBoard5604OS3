@@ -3,7 +3,7 @@
 
 
 
-int main(void) {
+ int main(void) {
 	volatile int i = 0;
 
 	Init_ModesAndClock();
