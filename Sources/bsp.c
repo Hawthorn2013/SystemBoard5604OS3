@@ -740,6 +740,8 @@ void Test_DSPI_1_Send_Data(void)
     DSPI_1.CTAR[1].R = 0x38087726;  //TF 极性为0，相位为0，baud rate=625k/s
     DSPI_1.CTAR[2].R = 0x3E0A7724;  //L3G4200D 极性为1，相位为1，baud rate=1m/s
     DSPI_1.CTAR[3].R = 0x380A7720;  //OLED 极性为0，相位为0，baud rate=8m/s
+    DSPI_1.CTAR[4].R = 0x380A7720;
+    DSPI_1.CTAR[4].B.FMSZ = 0b1111;
     DSPI_1.MCR.B.HALT = 0x0;         /* Exit HALT mode: go from STOPPED to RUNNING state*/
     SIU.PCR[34].R = 0x0604; //PC2 SCK_1
     //SIU.PSMI[7].R = 0;    //SCK_1 PCR[34]
@@ -771,6 +773,27 @@ void Test_DSPI_1_Send(uint8_t data)
     uint32_t pushr = 0xB8020000;
     
     pushr |= (uint32_t)data;
+    DSPI_1.PUSHR.R = pushr;
+    while(!DSPI_1.SR.B.TCF){}
+    pushr = (uint16_t)DSPI_1.POPR.B.RXDATA;
+    DSPI_1.SR.B.TCF = 1;
+}
+
+
+void Test_DSPI_1_Send_Ex(uint8_t data0, uint8_t data1, int cnt)
+{
+    uint32_t pushr = 0xB8020000;
+    
+    if (1 == cnt)
+    {
+        pushr |= (uint32_t)data0;
+    }
+    else
+    {
+        pushr = 0xC8020000;
+        pushr |= (uint32_t)data0 << 8;
+        pushr |= (uint32_t)data1;
+    }
     DSPI_1.PUSHR.R = pushr;
     while(!DSPI_1.SR.B.TCF){}
     pushr = (uint16_t)DSPI_1.POPR.B.RXDATA;

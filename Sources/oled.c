@@ -222,18 +222,45 @@ void Test_OLED_Init(void)
     Test_DSPI_1_Send(0xaf);//--turn on oled panel
     
     {
-        int x, y;
-        for(y = 0; y < OLED_PAGE_MAX; y++)
+        int cnt = 0;
+        while (1)
         {
-            OLED_PIN_DC = 0;
-            Test_DSPI_1_Send((uint8_t)(0xb0 + y));
-            Test_DSPI_1_Send(0x01);
-            Test_DSPI_1_Send(0x10);             
-            for(x = 0; x < OLED_SEG_MAX; x++)
+            int x, y;
+            for(y = 0; y < OLED_PAGE_MAX; y++)
             {
-                OLED_PIN_DC = 1;
-                Test_DSPI_1_Send(0xFF);
+                OLED_PIN_DC = 0;
+                Test_DSPI_1_Send((uint8_t)(0xb0 + y));
+                Test_DSPI_1_Send(0x01);
+                Test_DSPI_1_Send(0x10);             
+                for(x = 0; x < OLED_SEG_MAX; x++)
+                {
+                    OLED_PIN_DC = 1;
+                    if (0 == cnt)
+                    {
+                        if (y%2)
+                        {
+                            Test_DSPI_1_Send(0xFF);
+                        }
+                        else
+                        {
+                            Test_DSPI_1_Send(0x00);
+                        }
+                    }
+                    else
+                    {
+                        if (y%2)
+                        {
+                            Test_DSPI_1_Send(0x00);
+                        }
+                        else
+                        {
+                            Test_DSPI_1_Send(0xFF);
+                        }
+                    }
+                }
             }
+            cnt++;
+            cnt %= 2;
         }
     }
     while(1) {}
