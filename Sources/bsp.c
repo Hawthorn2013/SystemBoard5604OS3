@@ -803,10 +803,10 @@ int DSPI_SYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
 {
     int quotient, remainder, i;
     
-//    if (dev->dspi->SR.B.TXCTR)
-//    {
-//        return 1;
-//    }
+    if (dev->dspi->SR.B.TXCTR)
+    {
+        return 1;
+    }
     if (cnt > DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
     {
         return 2;
@@ -851,10 +851,10 @@ int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
 {
     int quotient, remainder, i;
     
-//    if (dev->dspi->SR.B.TXCTR)
-//    {
-//        return 1;
-//    }
+    if (dev->dspi->SR.B.TXCTR)
+    {
+        return 1;
+    }
     if (cnt > DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
     {
         return 2;
