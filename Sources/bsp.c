@@ -801,6 +801,35 @@ void Test_DSPI_1_Send_Ex(uint8_t data0, uint8_t data1, int cnt)
 }
 
 
+void Test_DSPI_1_Send_Ex2(uint8_t data[], int cnt)
+{
+    uint32_t pushr;
+    int quotient, remainder, i = 0;
+    
+    quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
+    remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
+    for (i = 0; i < quotient; i++)
+    {
+        pushr = 0xC0020000;
+        if (!remainder && i == quotient - 1)
+        {
+            pushr |= 0x08000000;
+        }
+        pushr |= *((uint16_t *)(data) +i);
+        DSPI_1.PUSHR.R = pushr;
+    }
+    if (remainder)
+    {
+        pushr = 0xB8020000;
+        pushr |= *(data + i * DSPI_PUSHR_MAX_BYTE_AMOUNT);
+        DSPI_1.PUSHR.R = pushr;
+    }
+    while(!DSPI_1.SR.B.EOQF){}
+    DSPI_1.SR.B.EOQF = 1;
+    DSPI_1.SR.B.TCF = 1;
+}
+
+
 void Disable_Watchdog(void)
 {
     SWT.SR.R = 0x0000c520;  /* rite keys to clear soft lock bit */
