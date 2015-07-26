@@ -35,11 +35,17 @@ int Init_OLED(void)
     OLED_Display_Memory.Mutex_Pages = OSMutexCreate(TASK_PRIO_MUTEX_OLED_DIS_MEM, &err1);
     Set_DSPI_CTAR(&DSPI_1_Device_Data, OLED_DSPI_CTAR_DBR, OLED_DSPI_CTAR_CPOL, OLED_DSPI_CTAR_CPHA, OLED_DSPI_CTAR_LSBFE, OLED_DSPI_CTAR_PCSSCK, OLED_DSPI_CTAR_PASC, OLED_DSPI_CTAR_PDT, OLED_DSPI_CTAR_PBR, OLED_DSPI_CTAR_CSSCK, OLED_DSPI_CTAR_ASC, OLED_DSPI_CTAR_DT, OLED_DSPI_CTAR_BR);
     Set_DSPI_PUSHR(&DSPI_1_Device_Data, OLED_DSPI_PUSHR_CONT, OLED_DSPI_PUSHR_PCS);
+    Init_OLED_Pin();
+    Delay_ms(100);
+}
+
+
+int Init_OLED_Pin(void)
+{
     Init_GPIO(OLED_PIN_DC_PCR);
     Set_GPIO(OLED_PIN_DC_PCR, 1);
     Init_GPIO(OLED_PIN_RST_PCR);
     Set_GPIO(OLED_PIN_RST_PCR, 1);
-    Delay_ms(100);
 }
 
 
@@ -156,6 +162,81 @@ void Task_OLED_Flush_Mem(void *p_arg)
         OSMutexPost(DSPI_1_Device_Data.Mut_DSPI_1);
         OSMutexPost(OLED_Display_Memory.Mutex_Pages);
     }
+}
+
+
+void Test_OLED_Init(void)
+{
+    Init_OLED_Pin();
+    DSPI_1.MCR.R = 0x803f0001;     /* Configure DSPI_0 as master */
+    DSPI_1.CTAR[0].R = 0x3E0A7729;  //未使用 用于发送8bits 调整极性为1，相位为1，调整波特率为低速31.25kbit/s
+    DSPI_1.CTAR[1].R = 0x38087726;  //TF 极性为0，相位为0，baud rate=625k/s
+    DSPI_1.CTAR[2].R = 0x3E0A7724;  //L3G4200D 极性为1，相位为1，baud rate=1m/s
+    DSPI_1.CTAR[3].R = 0x380A7720;  //OLED 极性为0，相位为0，baud rate=8m/s
+    DSPI_1.MCR.B.HALT = 0x0;         /* Exit HALT mode: go from STOPPED to RUNNING state*/
+    SIU.PCR[34].R = 0x0604; //PC2 SCK_1
+    //SIU.PSMI[7].R = 0;    //SCK_1 PCR[34]
+    SIU.PCR[35].R = 0x0503; //PC3 CS0_1
+    //SIU.PSMI[9].R = 0;    //CS0_1 PCR[35]
+    SIU.PCR[36].R = 0x0104; //PC4 SIN_1
+    //SIU.PSMI[8].R = 0;    //SIN_1 PCR[36]
+    SIU.PCR[62].R = 0x0604; //PD14 CS1_1
+    SIU.PCR[63].R = 0x0604; //PD15 CS2_1
+    SIU.PCR[67].R = 0x0A04; //PE3 SOUT_1
+    SIU.PCR[74].R = 0x0A04; //PE10 CS3_1
+    SIU.PCR[75].R = 0x0A04; //PE11 CS4_1
+    DSPI_1.RSER.B.TCFRE = 0;    //关闭传输完成中断
+    
+    OLED_PIN_RST = 0;
+    Delay_ms(1000);
+    OLED_PIN_RST = 1;
+    
+    OLED_PIN_DC = 0;
+    Test_DSPI_1_Send(0xae);//--turn off oled panel
+    Test_DSPI_1_Send(0x00);//---set low column address
+    Test_DSPI_1_Send(0x10);//---set high column address
+    Test_DSPI_1_Send(0x40);//--set start line address  Set Mapping RAM Display Start Line (0x00~0x3F)
+    Test_DSPI_1_Send(0x81);//--set contrast control register
+    Test_DSPI_1_Send(0xcf); // Set SEG Output Current Brightness
+    Test_DSPI_1_Send(0xa1);//--Set SEG/Column Mapping     0xa0左右反置 0xa1正常
+    Test_DSPI_1_Send(0xc8);//Set COM/Row Scan Direction   0xc0上下反置 0xc8正常
+    Test_DSPI_1_Send(0xa6);//--set normal display
+    Test_DSPI_1_Send(0xa8);//--set multiplex ratio(1 to 64)
+    Test_DSPI_1_Send(0x3f);//--1/64 duty
+    Test_DSPI_1_Send(0xd3);//-set display offset   Shift Mapping RAM Counter (0x00~0x3F)
+    Test_DSPI_1_Send(0x00);//-not offset
+    Test_DSPI_1_Send(0xd5);//--set display clock divide ratio/oscillator frequency
+    Test_DSPI_1_Send(0x80);//--set divide ratio, Set Clock as 100 Frames/Sec
+    Test_DSPI_1_Send(0xd9);//--set pre-charge period
+    Test_DSPI_1_Send(0xf1);//Set Pre-Charge as 15 Clocks & Discharge as 1 Clock
+    Test_DSPI_1_Send(0xda);//--set com pins hardware configuration
+    Test_DSPI_1_Send(0x12);
+    Test_DSPI_1_Send(0xdb);//--set vcomh
+    Test_DSPI_1_Send(0x40);//Set VCOM Deselect Level
+    Test_DSPI_1_Send(0x20);//-Set Page Addressing Mode (0x00/0x01/0x02)
+    Test_DSPI_1_Send(0x02);//
+    Test_DSPI_1_Send(0x8d);//--set Charge Pump enable/disable
+    Test_DSPI_1_Send(0x14);//--set(0x10) disable
+    Test_DSPI_1_Send(0xa4);// Disable Entire Display On (0xa4/0xa5)
+    Test_DSPI_1_Send(0xa6);// Disable Inverse Display On (0xa6/a7) 
+    Test_DSPI_1_Send(0xaf);//--turn on oled panel
+    
+    {
+        int x, y;
+        for(y = 0; y < OLED_PAGE_MAX; y++)
+        {
+            OLED_PIN_DC = 0;
+            Test_DSPI_1_Send((uint8_t)(0xb0 + y));
+            Test_DSPI_1_Send(0x01);
+            Test_DSPI_1_Send(0x10);             
+            for(x = 0; x < OLED_SEG_MAX; x++)
+            {
+                OLED_PIN_DC = 1;
+                Test_DSPI_1_Send(0xFF);
+            }
+        }
+    }
+    while(1) {}
 }
 
 

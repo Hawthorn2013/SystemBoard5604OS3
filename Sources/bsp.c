@@ -766,6 +766,18 @@ void Test_DSPI_1_Send_Data(void)
 }
 
 
+void Test_DSPI_1_Send(uint8_t data)
+{
+    uint32_t pushr = 0xB8020000;
+    
+    pushr |= (uint32_t)data;
+    DSPI_1.PUSHR.R = pushr;
+    while(!DSPI_1.SR.B.TCF){}
+    pushr = (uint16_t)DSPI_1.POPR.B.RXDATA;
+    DSPI_1.SR.B.TCF = 1;
+}
+
+
 void Disable_Watchdog(void)
 {
     SWT.SR.R = 0x0000c520;  /* rite keys to clear soft lock bit */
