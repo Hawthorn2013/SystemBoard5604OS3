@@ -168,25 +168,9 @@ void Task_OLED_Flush_Mem(void *p_arg)
 void Test_OLED_Init(void)
 {
     Init_OLED_Pin();
-    DSPI_1.MCR.R = 0x803f0001;     /* Configure DSPI_0 as master */
-    DSPI_1.CTAR[0].R = 0x3E0A7729;  //未使用 用于发送8bits 调整极性为1，相位为1，调整波特率为低速31.25kbit/s
-    DSPI_1.CTAR[1].R = 0x38087726;  //TF 极性为0，相位为0，baud rate=625k/s
-    DSPI_1.CTAR[2].R = 0x3E0A7724;  //L3G4200D 极性为1，相位为1，baud rate=1m/s
-    DSPI_1.CTAR[3].R = 0x380A7720;  //OLED 极性为0，相位为0，baud rate=8m/s
-    DSPI_1.MCR.B.HALT = 0x0;         /* Exit HALT mode: go from STOPPED to RUNNING state*/
-    SIU.PCR[34].R = 0x0604; //PC2 SCK_1
-    //SIU.PSMI[7].R = 0;    //SCK_1 PCR[34]
-    SIU.PCR[35].R = 0x0503; //PC3 CS0_1
-    //SIU.PSMI[9].R = 0;    //CS0_1 PCR[35]
-    SIU.PCR[36].R = 0x0104; //PC4 SIN_1
-    //SIU.PSMI[8].R = 0;    //SIN_1 PCR[36]
-    SIU.PCR[62].R = 0x0604; //PD14 CS1_1
-    SIU.PCR[63].R = 0x0604; //PD15 CS2_1
-    SIU.PCR[67].R = 0x0A04; //PE3 SOUT_1
-    SIU.PCR[74].R = 0x0A04; //PE10 CS3_1
-    SIU.PCR[75].R = 0x0A04; //PE11 CS4_1
-    DSPI_1.RSER.B.TCFRE = 0;    //关闭传输完成中断
-    
+    Open_DSPI_Dev(&DSPI_1_Device_Data);
+    Set_DSPI_CTAR(&DSPI_1_Device_Data, OLED_DSPI_CTAR_DBR, OLED_DSPI_CTAR_CPOL, OLED_DSPI_CTAR_CPHA, OLED_DSPI_CTAR_LSBFE, OLED_DSPI_CTAR_PCSSCK, OLED_DSPI_CTAR_PASC, OLED_DSPI_CTAR_PDT, OLED_DSPI_CTAR_PBR, OLED_DSPI_CTAR_CSSCK, OLED_DSPI_CTAR_ASC, OLED_DSPI_CTAR_DT, OLED_DSPI_CTAR_BR);
+    Set_DSPI_PUSHR(&DSPI_1_Device_Data, OLED_DSPI_PUSHR_CONT, OLED_DSPI_PUSHR_PCS);
     OLED_PIN_RST = 0;
     Delay_ms(1000);
     OLED_PIN_RST = 1;
@@ -195,13 +179,13 @@ void Test_OLED_Init(void)
     {
         uint8_t cmd[] = {0xae, 0x00, 0x10, 0x40, 0x81, 0xcf, 0xa1, 0xc8, 0xa6, 0xa8, 0x3f, 0xd3, 0x00, 0xd5, 0x80, 0xd9, 0xf1, 0xda, 0x12, 0xdb, 0x40, 0x20, 0x02, 0x8d, 0x14, 0xa4, 0xa6, 0xaf, };
         
-        Test_DSPI_1_Send_Ex2(cmd, 7);
-        Test_DSPI_1_Send_Ex2(cmd + 7, 6);
-        Test_DSPI_1_Send_Ex2(cmd + 13, 5);
-        Test_DSPI_1_Send_Ex2(cmd + 18, 4);
-        Test_DSPI_1_Send_Ex2(cmd + 22, 3);
-        Test_DSPI_1_Send_Ex2(cmd + 25, 2);
-        Test_DSPI_1_Send_Ex2(cmd + 27, 1);
+        DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, cmd, 7);
+        DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, cmd + 7, 6);
+        DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, cmd + 13, 5);
+        DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, cmd + 18, 4);
+        DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, cmd + 22, 3);
+        DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, cmd + 25, 2);
+        DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, cmd + 27, 1);
     }
     
     {
@@ -231,7 +215,7 @@ void Test_OLED_Init(void)
                 cmd[0] = (uint8_t)(0xb0 + y);
                 cmd[1] = 0x00;
                 cmd[2] = 0x10;
-                Test_DSPI_1_Send_Ex2(cmd, 3);
+                DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, cmd, 3);
                 for(x = 0; x < OLED_SEG_MAX / DSPI_ASYNC_SEND_DATA_MAX_LENGTH; x++)
                 {
                     OLED_PIN_DC = 1;
@@ -239,22 +223,22 @@ void Test_OLED_Init(void)
                     {
                         if (y%2)
                         {
-                            Test_DSPI_1_Send_Ex2(data1, 8);
+                            DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, data1, 8);
                         }
                         else
                         {
-                            Test_DSPI_1_Send_Ex2(data2, 8);
+                            DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, data2, 8);
                         }
                     }
                     else
                     {
                         if (y%2)
                         {
-                            Test_DSPI_1_Send_Ex2(data2, 8);
+                            DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, data2, 8);
                         }
                         else
                         {
-                            Test_DSPI_1_Send_Ex2(data1, 8);
+                            DSPI_SYNC_Send_Data(&DSPI_1_Device_Data, data1, 8);
                         }
                     }
                 }

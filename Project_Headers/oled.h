@@ -39,7 +39,7 @@
 #define OLED_DSPI_CTAR_CSSCK                            (0b0111)
 #define OLED_DSPI_CTAR_ASC                              (0b0111)
 #define OLED_DSPI_CTAR_DT                               (0b0010)
-#define OLED_DSPI_CTAR_BR                               (0b0100)
+#define OLED_DSPI_CTAR_BR                               (0b0000)
 #define TASK_STK_SIZE_OLED_FLUSH_MEM                    (1024)
 #define TASK_PRIO_OLED_FLUSH_MEM                        (15)
 #define TASK_PRIO_MUTEX_OLED_DIS_MEM                    (3)

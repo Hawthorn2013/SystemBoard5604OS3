@@ -514,25 +514,23 @@ void INTC_Handler_OSTickISR(void)
 }
 
 
-int Init_SPI(volatile struct DSPI_tag *dspi)
+int Init_DSPI(volatile struct DSPI_tag *dspi)
 {
     dspi->MCR.R = 0x803f0001;
+    dspi->RSER.R = 0x00000000;
     dspi->MCR.B.HALT = 0x0;
 }
 
 
 int Init_DSPI_1(void)
 {
-    INT8U err1 = 0;
-    
-    Init_SPI(&DSPI_1);
+    Init_DSPI(&DSPI_1);
     Set_DSPI_1_Pin();
 //    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TFUF_RFOF, IRQ_DSPI_1_SR_TFUF_RFOF, INTC_PRIORITY_DSPI_1_SR_TFUF_RFOF);
     INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_EOQF, IRQ_DSPI_1_SR_EOQF, INTC_PRIORITY_DSPI_1_SR_EOQF);
 //    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TFFF, IRQ_DSPI_1_SR_TFFF, INTC_PRIORITY_DSPI_1_SR_TFFF);
 //    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_TCF, IRQ_DSPI_1_SR_TCF, INTC_PRIORITY_DSPI_1_SR_TCF);
 //    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_RFDF, IRQ_DSPI_1_SR_RFDF, INTC_PRIORITY_DSPI_1_SR_RFDF);
-    DSPI_1_Device_Data.Mut_DSPI_1 = OSMutexCreate(DSPI_1_MUTEX_PRIO, &err1);
     DSPI_1_Device_Data.CB_TX_Complete = NULL;
     DSPI_1_Device_Data.dspi = &DSPI_1;
 }
@@ -563,7 +561,11 @@ void INTC_Handler_DSPI_1_SR_TFUF_RFOF(void)
 void INTC_Handler_DSPI_1_SR_EOQF(void)
 {
     DSPI_1.SR.B.EOQF = 1;
-    DSPI_1_Device_Data.CB_TX_Complete();
+    Disable_INTC_DSPI_SR_EOQF(&DSPI_1);
+    if (NULL != DSPI_1_Device_Data.CB_TX_Complete)
+    {
+        DSPI_1_Device_Data.CB_TX_Complete();
+    }
 }
 
 
@@ -582,6 +584,17 @@ void INTC_Handler_DSPI_1_SR_TCF(void)
 void INTC_Handler_DSPI_1_SR_RFDF(void)
 {
     
+}
+
+
+int Disable_INTC_DSPI_SR_All(volatile struct DSPI_tag *dspi)
+{
+    int halt;
+    
+    halt = dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT = 0b1;
+    dspi->RSER.R = 0x00000000;
+    dspi->MCR.B.HALT = halt;
 }
 
 
@@ -611,13 +624,23 @@ int Disable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
 
 int Enable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
 {
+    int halt;
+    
+    halt = dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT = 0b1;
     dspi->RSER.B.EOQFRE = 1;
+    dspi->MCR.B.HALT = halt;
 }
 
 
 int Disable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
 {
+    int halt;
+    
+    halt = dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT = 0b1;
     dspi->RSER.B.EOQFRE = 0;
+    dspi->MCR.B.HALT = halt;
 }
 
 
@@ -657,9 +680,26 @@ int Disable_INTC_DSPI_SR_SR_RFDF(volatile struct DSPI_tag *dspi)
 }
 
 
+int Open_DSPI_Dev(struct DSPI_Device_Data *dev)
+{
+    Disable_INTC_DSPI_SR_All(dev->dspi);
+    dev->dspi->SR.R         = 0x00000000;
+    dev->CB_TX_Complete     = NULL;
+}
+
+
+int Close_DSPI(struct DSPI_Device_Data *dev)
+{
+    Disable_INTC_DSPI_SR_All(dev->dspi);
+    dev->dspi->SR.R         = 0x00000000;
+    dev->CB_TX_Complete     = NULL;
+}
+
+
 int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int lsbfe,int pcssck,int pasc,int pdt,int pbr,int cssck,int asc,int dt,int br)
 {
     dev->CTAR.B.DBR = dbr;
+    dev->CTAR.B.FMSZ = DSPI_CTAR_FMSZ_2BYTES;                              /* Avoid reserved value */
     dev->CTAR.B.CPOL = cpol;
     dev->CTAR.B.CPHA = cpha;
     dev->CTAR.B.LSBFE = lsbfe;
@@ -672,7 +712,6 @@ int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int 
     dev->CTAR.B.DT = dt;
     dev->CTAR.B.BR = br;
     dev->dspi->MCR.B.HALT = 1;
-    dev->CTAR.B.FMSZ = DSPI_CTAR_FMSZ_2BYTES;
     dev->dspi->CTAR[0].R = dev->CTAR.R;
     dev->CTAR.B.FMSZ = DSPI_CTAR_FMSZ_1BYTE;
     dev->dspi->CTAR[1].R = dev->CTAR.R;
@@ -684,20 +723,65 @@ int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int 
 int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs)
 {
     dev->PUSHR.B.CONT = cont;
-    dev->PUSHR.B.CTAS = 0;
-    dev->PUSHR.B.EOQ = 0;
     dev->PUSHR.R &= 0xFFC0FFFF;
     dev->PUSHR.R |= (uint32_t)0x00000001 << (16 + pcs);
     return 0;
 }
 
 
+int DSPI_SYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
+{
+    int quotient, remainder, i;
+    
+//    if (dev->dspi->SR.B.TXCTR)
+//    {
+//        return 1;
+//    }
+    if (cnt > DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
+    {
+        return 2;
+    }
+    dev->PUSHR.B.CTAS = 0;
+    dev->PUSHR.B.EOQ = 0;
+    Disable_INTC_DSPI_SR_EOQF(dev->dspi);
+    Disable_INTC_DSPI_SR_EOQF(dev->dspi);
+    quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
+    remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
+    for (i = 0; i < quotient; i++)
+    {
+        if (!remainder && i == quotient - 1)
+        {
+            dev->PUSHR.B.EOQ = 1;
+        }
+        dev->PUSHR.B.TXDATA = *((uint16_t *)(data) +i);
+        dev->dspi->PUSHR.R = dev->PUSHR.R;
+    }
+    if (remainder)
+    {
+        dev->PUSHR.B.EOQ = 1;
+        dev->PUSHR.B.CTAS = 1;
+        dev->PUSHR.B.TXDATA = (uint32_t)*(data + i * DSPI_PUSHR_MAX_BYTE_AMOUNT);
+        dev->dspi->PUSHR.R = dev->PUSHR.R;
+    }
+    while(!dev->dspi->SR.B.EOQF) {}
+    dev->dspi->SR.B.EOQF = 1;
+    return 0;
+}
+
+
+/*
+ * If you don't need the callback function, then set it NULL
+ */
+int Set_DSPI_Callback_TX_Complete(struct DSPI_Device_Data *dev, void(*fun)(void))
+{
+    dev->CB_TX_Complete = fun;
+}
+
+
 int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
 {
     int quotient, remainder, i;
-    uint32_t pushr;
     
-    pushr = 0xffff0000;
     if (dev->dspi->SR.B.TXCTR)
     {
         return 1;
@@ -706,10 +790,11 @@ int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
     {
         return 2;
     }
-    quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
-    remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
     dev->PUSHR.B.CTAS = 0;
     dev->PUSHR.B.EOQ = 0;
+    Enable_INTC_DSPI_SR_EOQF(dev->dspi);
+    quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
+    remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
     for (i = 0; i < quotient; i++)
     {
         if (!remainder && i == quotient - 1)
