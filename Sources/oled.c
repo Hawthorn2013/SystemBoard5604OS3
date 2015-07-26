@@ -192,34 +192,48 @@ void Test_OLED_Init(void)
     OLED_PIN_RST = 1;
     
     OLED_PIN_DC = 0;
-    Test_DSPI_1_Send(0xae);//--turn off oled panel
-    Test_DSPI_1_Send(0x00);//---set low column address
-    Test_DSPI_1_Send(0x10);//---set high column address
-    Test_DSPI_1_Send(0x40);//--set start line address  Set Mapping RAM Display Start Line (0x00~0x3F)
-    Test_DSPI_1_Send(0x81);//--set contrast control register
-    Test_DSPI_1_Send(0xcf); // Set SEG Output Current Brightness
-    Test_DSPI_1_Send(0xa1);//--Set SEG/Column Mapping     0xa0左右反置 0xa1正常
-    Test_DSPI_1_Send(0xc8);//Set COM/Row Scan Direction   0xc0上下反置 0xc8正常
-    Test_DSPI_1_Send(0xa6);//--set normal display
-    Test_DSPI_1_Send(0xa8);//--set multiplex ratio(1 to 64)
-    Test_DSPI_1_Send(0x3f);//--1/64 duty
-    Test_DSPI_1_Send(0xd3);//-set display offset   Shift Mapping RAM Counter (0x00~0x3F)
-    Test_DSPI_1_Send(0x00);//-not offset
-    Test_DSPI_1_Send(0xd5);//--set display clock divide ratio/oscillator frequency
-    Test_DSPI_1_Send(0x80);//--set divide ratio, Set Clock as 100 Frames/Sec
-    Test_DSPI_1_Send(0xd9);//--set pre-charge period
-    Test_DSPI_1_Send(0xf1);//Set Pre-Charge as 15 Clocks & Discharge as 1 Clock
-    Test_DSPI_1_Send(0xda);//--set com pins hardware configuration
-    Test_DSPI_1_Send(0x12);
-    Test_DSPI_1_Send(0xdb);//--set vcomh
-    Test_DSPI_1_Send(0x40);//Set VCOM Deselect Level
-    Test_DSPI_1_Send(0x20);//-Set Page Addressing Mode (0x00/0x01/0x02)
-    Test_DSPI_1_Send(0x02);//
-    Test_DSPI_1_Send(0x8d);//--set Charge Pump enable/disable
-    Test_DSPI_1_Send(0x14);//--set(0x10) disable
-    Test_DSPI_1_Send(0xa4);// Disable Entire Display On (0xa4/0xa5)
-    Test_DSPI_1_Send(0xa6);// Disable Inverse Display On (0xa6/a7) 
-    Test_DSPI_1_Send(0xaf);//--turn on oled panel
+    Test_DSPI_1_Send_Ex(0xae, 0x00, 2);
+//    Test_DSPI_1_Send(0xae);//--turn off oled panel
+//    Test_DSPI_1_Send(0x00);//---set low column address
+    Test_DSPI_1_Send_Ex(0x10, 0x40, 2);
+//    Test_DSPI_1_Send(0x10);//---set high column address
+//    Test_DSPI_1_Send(0x40);//--set start line address  Set Mapping RAM Display Start Line (0x00~0x3F)
+    Test_DSPI_1_Send_Ex(0x81, 0xcf, 2);
+//    Test_DSPI_1_Send(0x81);//--set contrast control register
+//    Test_DSPI_1_Send(0xcf); // Set SEG Output Current Brightness
+    Test_DSPI_1_Send_Ex(0xa1, 0xc8, 2);
+//    Test_DSPI_1_Send(0xa1);//--Set SEG/Column Mapping     0xa0左右反置 0xa1正常
+//    Test_DSPI_1_Send(0xc8);//Set COM/Row Scan Direction   0xc0上下反置 0xc8正常
+    Test_DSPI_1_Send_Ex(0xa6, 0xa8, 2);
+//    Test_DSPI_1_Send(0xa6);//--set normal display
+//    Test_DSPI_1_Send(0xa8);//--set multiplex ratio(1 to 64)
+    Test_DSPI_1_Send_Ex(0x3f, 0xd3, 2);
+//    Test_DSPI_1_Send(0x3f);//--1/64 duty
+//    Test_DSPI_1_Send(0xd3);//-set display offset   Shift Mapping RAM Counter (0x00~0x3F)
+    Test_DSPI_1_Send_Ex(0x00, 0xd5, 2);
+//    Test_DSPI_1_Send(0x00);//-not offset
+//    Test_DSPI_1_Send(0xd5);//--set display clock divide ratio/oscillator frequency
+    Test_DSPI_1_Send_Ex(0x80, 0xd9, 2);
+//    Test_DSPI_1_Send(0x80);//--set divide ratio, Set Clock as 100 Frames/Sec
+//    Test_DSPI_1_Send(0xd9);//--set pre-charge period
+    Test_DSPI_1_Send_Ex(0xf1, 0xda, 2);
+//    Test_DSPI_1_Send(0xf1);//Set Pre-Charge as 15 Clocks & Discharge as 1 Clock
+//    Test_DSPI_1_Send(0xda);//--set com pins hardware configuration
+    Test_DSPI_1_Send_Ex(0x12, 0xdb, 2);
+//    Test_DSPI_1_Send(0x12);
+//    Test_DSPI_1_Send(0xdb);//--set vcomh
+    Test_DSPI_1_Send_Ex(0x40, 0x20, 2);
+//    Test_DSPI_1_Send(0x40);//Set VCOM Deselect Level
+//    Test_DSPI_1_Send(0x20);//-Set Page Addressing Mode (0x00/0x01/0x02)
+    Test_DSPI_1_Send_Ex(0x02, 0x8d, 2);
+//    Test_DSPI_1_Send(0x02);//
+//    Test_DSPI_1_Send(0x8d);//--set Charge Pump enable/disable
+    Test_DSPI_1_Send_Ex(0x14, 0xa4, 2);
+//    Test_DSPI_1_Send(0x14);//--set(0x10) disable
+//    Test_DSPI_1_Send(0xa4);// Disable Entire Display On (0xa4/0xa5)
+    Test_DSPI_1_Send_Ex(0xa6, 0xaf, 2);
+//    Test_DSPI_1_Send(0xa6);// Disable Inverse Display On (0xa6/a7) 
+//    Test_DSPI_1_Send(0xaf);//--turn on oled panel
     
     {
         int cnt = 0;
@@ -229,9 +243,11 @@ void Test_OLED_Init(void)
             for(y = 0; y < OLED_PAGE_MAX; y++)
             {
                 OLED_PIN_DC = 0;
-                Test_DSPI_1_Send((uint8_t)(0xb0 + y));
-                Test_DSPI_1_Send(0x01);
-                Test_DSPI_1_Send(0x10);             
+                Test_DSPI_1_Send_Ex((uint8_t)(0xb0 + y), 0x01, 2);
+                Test_DSPI_1_Send_Ex(0x01, 0x00, 1);
+//                Test_DSPI_1_Send((uint8_t)(0xb0 + y));
+//                Test_DSPI_1_Send(0x01);
+//                Test_DSPI_1_Send(0x10);             
                 for(x = 0; x < OLED_SEG_MAX; x++)
                 {
                     OLED_PIN_DC = 1;
