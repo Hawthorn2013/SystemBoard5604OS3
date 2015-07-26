@@ -39,6 +39,7 @@ int Init_OLED(void)
     Set_GPIO(OLED_PIN_DC_PCR, 1);
     Init_GPIO(OLED_PIN_RST_PCR);
     Set_GPIO(OLED_PIN_RST_PCR, 1);
+    Delay_ms(100);
 }
 
 
@@ -88,6 +89,12 @@ void Task_OLED_Flush_Mem(void *p_arg)
     int i = 0;
     
     (void) p_arg;
+    {
+        OLED_PIN_RST = 0;
+        OSTimeDly(100);
+        OLED_PIN_RST = 1;
+        OSTimeDly(5);
+    }
     {
         uint8_t cmds[] = {0xae, 0x00, 0x10, 0x40, 0x81, 0xcf, 0xa1, 0xc8, 0xa6, 0xa8, 0x3f, 0xd3, 0x00, 0xd5, 0x80, 0xd9, 0xf1, 0xda, 0x12, 0xdb, 0x40, 0x20, 0x02, 0x8d, 0x14, 0xa4, 0xa6, 0xaf, };
         int i = 0;
