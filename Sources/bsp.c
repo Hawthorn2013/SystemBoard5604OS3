@@ -838,6 +838,60 @@ int DSPI_SYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
 }
 
 
+int DSPI_SYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt)
+{
+    int quotient, remainder, i, rev_cnt = 0;
+    
+    if (dev->dspi->SR.B.TXCTR)
+    {
+        return 1;
+    }
+    if (cnt > DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
+    {
+        return 2;
+    }
+    dev->PUSHR.B.CTAS = 0;
+    dev->PUSHR.B.EOQ = 0;
+    Disable_INTC_DSPI_SR_EOQF(dev->dspi);
+    quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
+    remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
+    for (i = 0; i < quotient; i++)
+    {
+        if (!remainder && i == quotient - 1)
+        {
+            dev->PUSHR.B.EOQ = 1;
+        }
+        dev->PUSHR.B.TXDATA = *((uint16_t *)(send_data) +i);
+        dev->dspi->PUSHR.R = dev->PUSHR.R;
+        if (NULL != rev_data)
+        {
+            uint32_t popr;
+            
+            popr = dev->dspi->POPR.R;
+            rev_data[rev_cnt++] = *((uint8_t *)&popr + 2);
+            rev_data[rev_cnt++] = *((uint8_t *)&popr + 3);
+        }
+    }
+    if (remainder)
+    {
+        dev->PUSHR.B.EOQ = 1;
+        dev->PUSHR.B.CTAS = 1;
+        dev->PUSHR.B.TXDATA = (uint32_t)*(send_data + i * DSPI_PUSHR_MAX_BYTE_AMOUNT);
+        dev->dspi->PUSHR.R = dev->PUSHR.R;
+        if (NULL != rev_data)
+        {
+            uint32_t popr;
+            
+            popr = dev->dspi->POPR.R;
+            rev_data[rev_cnt++] = *((uint8_t *)&popr + 3);
+        }
+    }
+    while(!dev->dspi->SR.B.EOQF) {}
+    dev->dspi->SR.B.EOQF = 1;
+    return 0;
+}
+
+
 /*
  * If you don't need the callback function, then set it NULL
  */
