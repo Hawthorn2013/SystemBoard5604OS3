@@ -209,34 +209,52 @@ void Test_OLED_Init(void)
         while (1)
         {
             int x, y;
+            uint8_t data1[8], data2[8];
+            {
+                int i;
+                for (i = 0; i < 8; i++)
+                {
+                    data1[i] = 0xFF;
+                }
+            }
+            {
+                int i;
+                for (i = 0; i < 8; i++)
+                {
+                    data2[i] = 0x00;
+                }
+            }
             for(y = 0; y < OLED_PAGE_MAX; y++)
             {
+                uint8_t cmd[3];
                 OLED_PIN_DC = 0;
-                Test_DSPI_1_Send_Ex((uint8_t)(0xb0 + y), 0x01, 2);
-                Test_DSPI_1_Send_Ex(0x01, 0x00, 1);         
-                for(x = 0; x < OLED_SEG_MAX; x++)
+                cmd[0] = (uint8_t)(0xb0 + y);
+                cmd[1] = 0x00;
+                cmd[2] = 0x10;
+                Test_DSPI_1_Send_Ex2(cmd, 3);
+                for(x = 0; x < OLED_SEG_MAX / DSPI_ASYNC_SEND_DATA_MAX_LENGTH; x++)
                 {
                     OLED_PIN_DC = 1;
                     if (0 == cnt)
                     {
                         if (y%2)
                         {
-                            Test_DSPI_1_Send(0xFF);
+                            Test_DSPI_1_Send_Ex2(data1, 8);
                         }
                         else
                         {
-                            Test_DSPI_1_Send(0x00);
+                            Test_DSPI_1_Send_Ex2(data2, 8);
                         }
                     }
                     else
                     {
                         if (y%2)
                         {
-                            Test_DSPI_1_Send(0x00);
+                            Test_DSPI_1_Send_Ex2(data2, 8);
                         }
                         else
                         {
-                            Test_DSPI_1_Send(0xFF);
+                            Test_DSPI_1_Send_Ex2(data1, 8);
                         }
                     }
                 }

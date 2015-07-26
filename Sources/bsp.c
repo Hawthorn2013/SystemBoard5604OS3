@@ -768,39 +768,6 @@ void Test_DSPI_1_Send_Data(void)
 }
 
 
-void Test_DSPI_1_Send(uint8_t data)
-{
-    uint32_t pushr = 0xB8020000;
-    
-    pushr |= (uint32_t)data;
-    DSPI_1.PUSHR.R = pushr;
-    while(!DSPI_1.SR.B.TCF){}
-    pushr = (uint16_t)DSPI_1.POPR.B.RXDATA;
-    DSPI_1.SR.B.TCF = 1;
-}
-
-
-void Test_DSPI_1_Send_Ex(uint8_t data0, uint8_t data1, int cnt)
-{
-    uint32_t pushr = 0xB8020000;
-    
-    if (1 == cnt)
-    {
-        pushr |= (uint32_t)data0;
-    }
-    else
-    {
-        pushr = 0xC8020000;
-        pushr |= (uint32_t)data0 << 8;
-        pushr |= (uint32_t)data1;
-    }
-    DSPI_1.PUSHR.R = pushr;
-    while(!DSPI_1.SR.B.TCF){}
-    pushr = (uint16_t)DSPI_1.POPR.B.RXDATA;
-    DSPI_1.SR.B.TCF = 1;
-}
-
-
 void Test_DSPI_1_Send_Ex2(uint8_t data[], int cnt)
 {
     uint32_t pushr;

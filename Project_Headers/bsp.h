@@ -326,8 +326,6 @@ extern int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cp
 extern int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs);
 extern int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt);
 extern void Test_DSPI_1_Send_Data(void);
-extern void Test_DSPI_1_Send(uint8_t data);
-extern void Test_DSPI_1_Send_Ex(uint8_t data0, uint8_t data1, int cnt);
 extern void Test_DSPI_1_Send_Ex2(uint8_t data[], int cnt);
 
 /*
