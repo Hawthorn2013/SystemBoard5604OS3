@@ -15,6 +15,7 @@
     Init_Key(PCR_BSP_S4, EMIOS_0_UC_BSP_S4, IRQ_BSP_S3_S4, INTC_Handler_BSP_S3_S4);
     Init_UART_0_Ex();
     Init_DSPI_1();
+    Enable_IRQ();
     Test_OLED_Init();
     OSInit();
     Init_OSTickISR();

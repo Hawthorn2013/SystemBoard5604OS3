@@ -52,4 +52,5 @@ extern int Fill_OLED_PAGE(int page, int seg_start, int seg_cnt, int pixel_appear
 extern void Task_OLED_Flush_Mem(void *p_arg);
 extern void Task_OLED_Flush_Mem(void *p_arg);
 extern void Test_OLED_Init(void);
+extern void Test_ASYNC_Send_Data(void);
 extern void Resume_Task_OLED_Flush_Mem(void);

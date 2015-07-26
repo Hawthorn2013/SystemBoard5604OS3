@@ -560,8 +560,8 @@ void INTC_Handler_DSPI_1_SR_TFUF_RFOF(void)
 
 void INTC_Handler_DSPI_1_SR_EOQF(void)
 {
-    DSPI_1.SR.B.EOQF = 1;
     Disable_INTC_DSPI_SR_EOQF(&DSPI_1);
+    DSPI_1.SR.B.EOQF = 1;
     if (NULL != DSPI_1_Device_Data.CB_TX_Complete)
     {
         DSPI_1_Device_Data.CB_TX_Complete();
@@ -794,7 +794,6 @@ int DSPI_SYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
     dev->PUSHR.B.CTAS = 0;
     dev->PUSHR.B.EOQ = 0;
     Disable_INTC_DSPI_SR_EOQF(dev->dspi);
-    Disable_INTC_DSPI_SR_EOQF(dev->dspi);
     quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
     remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
     for (i = 0; i < quotient; i++)
@@ -832,10 +831,10 @@ int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
 {
     int quotient, remainder, i;
     
-    if (dev->dspi->SR.B.TXCTR)
-    {
-        return 1;
-    }
+//    if (dev->dspi->SR.B.TXCTR)
+//    {
+//        return 1;
+//    }
     if (cnt > DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
     {
         return 2;
