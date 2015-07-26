@@ -591,34 +591,54 @@ int Disable_INTC_DSPI_SR_All(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
-    halt = dspi->MCR.B.HALT;
-    dspi->MCR.B.HALT = 0b1;
-    dspi->RSER.R = 0x00000000;
-    dspi->MCR.B.HALT = halt;
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.R            = 0x00000000;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
 int Enable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.TFUFRE = 1;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.TFUFRE     = 1;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
 int Disable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.TFUFRE = 0;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.TFUFRE     = 0;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
 int Enable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.RFOFRE = 1;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.RFOFRE     = 1;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
 int Disable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.RFOFRE = 0;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.RFOFRE     = 0;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
@@ -626,10 +646,10 @@ int Enable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
-    halt = dspi->MCR.B.HALT;
-    dspi->MCR.B.HALT = 0b1;
-    dspi->RSER.B.EOQFRE = 1;
-    dspi->MCR.B.HALT = halt;
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.EOQFRE     = 1;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
@@ -637,46 +657,76 @@ int Disable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
-    halt = dspi->MCR.B.HALT;
-    dspi->MCR.B.HALT = 0b1;
-    dspi->RSER.B.EOQFRE = 0;
-    dspi->MCR.B.HALT = halt;
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.EOQFRE     = 0;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
 int Enable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.TFFFRE = 1;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.TFFFRE     = 1;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
 int Disable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.TFFFRE = 0;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.TFFFRE     = 0;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
-int Enable_INTC_DSPI_SR_SR_TCF(volatile struct DSPI_tag *dspi)
+int Enable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.TCFRE = 1;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.TCFRE      = 1;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
-int Disable_INTC_DSPI_SR_SR_TCF(volatile struct DSPI_tag *dspi)
+int Disable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.TCFRE = 0;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.TCFRE      = 0;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
-int Enable_INTC_DSPI_SR_SR_RFDF(volatile struct DSPI_tag *dspi)
+int Enable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.RFDFRE = 1;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.RFDFRE     = 1;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
-int Disable_INTC_DSPI_SR_SR_RFDF(volatile struct DSPI_tag *dspi)
+int Disable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi)
 {
-    dspi->RSER.B.RFDFRE = 0;
+    int halt;
+    
+    halt                    = (int)dspi->MCR.B.HALT;
+    dspi->MCR.B.HALT        = 0b1;
+    dspi->RSER.B.RFDFRE     = 0;
+    dspi->MCR.B.HALT        = halt;
 }
 
 
