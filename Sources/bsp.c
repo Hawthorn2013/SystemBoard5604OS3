@@ -21,6 +21,26 @@ OS_EVENT Sem_DSPI_1;
 struct DSPI_Device_Data DSPI_1_Device_Data;
 
 
+static      void                INTC_Handler_DSPI_1_SR_TFUF_RFOF(void);
+static      void                INTC_Handler_DSPI_1_SR_EOQF(void);
+static      void                INTC_Handler_DSPI_1_SR_TFFF(void);
+static      void                INTC_Handler_DSPI_1_SR_TCF(void);
+static      void                INTC_Handler_DSPI_1_SR_RFDF(void);
+static      int                 Disable_INTC_DSPI_SR_All(volatile struct DSPI_tag *dspi);
+static      int                 Enable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi);
+static      int                 Disable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi);
+static      int                 Enable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi);
+static      int                 Disable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi);
+static      int                 Enable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi);
+static      int                 Disable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi);
+static      int                 Enable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi);
+static      int                 Disable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi);
+static      int                 Enable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi);
+static      int                 Disable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi);
+static      int                 Enable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi);
+static      int                 Disable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi);
+
+
 /*
  * Init pin to GPIO
  * Output high
@@ -552,13 +572,13 @@ int Set_DSPI_1_Pin(void)
 }
 
 
-void INTC_Handler_DSPI_1_SR_TFUF_RFOF(void)
+static void INTC_Handler_DSPI_1_SR_TFUF_RFOF(void)
 {
     
 }
 
 
-void INTC_Handler_DSPI_1_SR_EOQF(void)
+static void INTC_Handler_DSPI_1_SR_EOQF(void)
 {
     Disable_INTC_DSPI_SR_EOQF(&DSPI_1);
     DSPI_1.SR.B.EOQF = 1;
@@ -569,25 +589,25 @@ void INTC_Handler_DSPI_1_SR_EOQF(void)
 }
 
 
-void INTC_Handler_DSPI_1_SR_TFFF(void)
+static void INTC_Handler_DSPI_1_SR_TFFF(void)
 {
     
 }
 
 
-void INTC_Handler_DSPI_1_SR_TCF(void)
+static void INTC_Handler_DSPI_1_SR_TCF(void)
 {
     
 }
 
 
-void INTC_Handler_DSPI_1_SR_RFDF(void)
+static void INTC_Handler_DSPI_1_SR_RFDF(void)
 {
     
 }
 
 
-int Disable_INTC_DSPI_SR_All(volatile struct DSPI_tag *dspi)
+static int Disable_INTC_DSPI_SR_All(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -598,7 +618,7 @@ int Disable_INTC_DSPI_SR_All(volatile struct DSPI_tag *dspi)
 }
 
 
-int Enable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
+static int Enable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -609,7 +629,7 @@ int Enable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Disable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
+static int Disable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -620,7 +640,7 @@ int Disable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Enable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
+static int Enable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -631,7 +651,7 @@ int Enable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Disable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
+static int Disable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -642,7 +662,7 @@ int Disable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Enable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
+static int Enable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -653,7 +673,7 @@ int Enable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Disable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
+static int Disable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -664,7 +684,7 @@ int Disable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Enable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
+static int Enable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -675,7 +695,7 @@ int Enable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Disable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
+static int Disable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -686,7 +706,7 @@ int Disable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Enable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi)
+static int Enable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -697,7 +717,7 @@ int Enable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Disable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi)
+static int Disable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -708,7 +728,7 @@ int Disable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Enable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi)
+static int Enable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -719,7 +739,7 @@ int Enable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Disable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi)
+static int Disable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi)
 {
     int halt;
     
@@ -861,73 +881,6 @@ int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt)
         dev->dspi->PUSHR.R = dev->PUSHR.R;
     }
     return 0;
-}
-
-
-void Test_DSPI_1_Send_Data(void)
-{
-    vuint32_t pushr = 0x00000000;
-    vuint32_t popr = 0x00000000;
-    
-    DSPI_1.MCR.R = 0x803f0001;     /* Configure DSPI_0 as master */
-    DSPI_1.CTAR[0].R = 0x3E0A7729;  //未使用 用于发送8bits 调整极性为1，相位为1，调整波特率为低速31.25kbit/s
-    DSPI_1.CTAR[1].R = 0x38087726;  //TF 极性为0，相位为0，baud rate=625k/s
-    DSPI_1.CTAR[2].R = 0x3E0A7724;  //L3G4200D 极性为1，相位为1，baud rate=1m/s
-    DSPI_1.CTAR[3].R = 0x380A7720;  //OLED 极性为0，相位为0，baud rate=8m/s
-    DSPI_1.CTAR[4].R = 0x380A7720;
-    DSPI_1.CTAR[4].B.FMSZ = 0b1111;
-    DSPI_1.MCR.B.HALT = 0x0;         /* Exit HALT mode: go from STOPPED to RUNNING state*/
-    SIU.PCR[34].R = 0x0604; //PC2 SCK_1
-    //SIU.PSMI[7].R = 0;    //SCK_1 PCR[34]
-    SIU.PCR[35].R = 0x0503; //PC3 CS0_1
-    //SIU.PSMI[9].R = 0;    //CS0_1 PCR[35]
-    SIU.PCR[36].R = 0x0104; //PC4 SIN_1
-    //SIU.PSMI[8].R = 0;    //SIN_1 PCR[36]
-    SIU.PCR[62].R = 0x0604; //PD14 CS1_1
-    SIU.PCR[63].R = 0x0604; //PD15 CS2_1
-    SIU.PCR[67].R = 0x0A04; //PE3 SOUT_1
-    SIU.PCR[74].R = 0x0A04; //PE10 CS3_1
-    SIU.PCR[75].R = 0x0A04; //PE11 CS4_1
-    DSPI_1.RSER.B.TCFRE = 0;    //关闭传输完成中断
-    while (1)
-    {
-        pushr = 0x180100aa;
-        
-        DSPI_1.PUSHR.R = pushr;
-        while(!DSPI_1.SR.B.TCF) {}
-        popr = DSPI_1.POPR.R;
-        DSPI_1.SR.B.TCF = 1;
-        Delay_ms(3);
-    }
-}
-
-
-void Test_DSPI_1_Send_Ex2(uint8_t data[], int cnt)
-{
-    uint32_t pushr;
-    int quotient, remainder, i = 0;
-    
-    quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
-    remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
-    for (i = 0; i < quotient; i++)
-    {
-        pushr = 0xC0020000;
-        if (!remainder && i == quotient - 1)
-        {
-            pushr |= 0x08000000;
-        }
-        pushr |= *((uint16_t *)(data) +i);
-        DSPI_1.PUSHR.R = pushr;
-    }
-    if (remainder)
-    {
-        pushr = 0xB8020000;
-        pushr |= *(data + i * DSPI_PUSHR_MAX_BYTE_AMOUNT);
-        DSPI_1.PUSHR.R = pushr;
-    }
-    while(!DSPI_1.SR.B.EOQF){}
-    DSPI_1.SR.B.EOQF = 1;
-    DSPI_1.SR.B.TCF = 1;
 }
 
 

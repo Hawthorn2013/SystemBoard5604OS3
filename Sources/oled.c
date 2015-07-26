@@ -89,80 +89,80 @@ int Fill_OLED_PAGE(int page, int seg_start, int seg_cnt, int pixel_appearance)
 }
 
 
-void Task_OLED_Flush_Mem(void *p_arg)
-{
-    INT8U err1 = 0, err2 = 0, err3 = 0;
-    int i = 0;
-    
-    (void) p_arg;
-    {
-        OLED_PIN_RST = 0;
-        OSTimeDly(100);
-        OLED_PIN_RST = 1;
-        OSTimeDly(5);
-    }
-    {
-        uint8_t cmds[] = {0xae, 0x00, 0x10, 0x40, 0x81, 0xcf, 0xa1, 0xc8, 0xa6, 0xa8, 0x3f, 0xd3, 0x00, 0xd5, 0x80, 0xd9, 0xf1, 0xda, 0x12, 0xdb, 0x40, 0x20, 0x02, 0x8d, 0x14, 0xa4, 0xa6, 0xaf, };
-        int i = 0;
-        INT8U err1 = 0;
-        uint32_t test1234[] = {0x12345678, 0xECECECEC};
-        
-        Dummy((uint8_t *)test1234);
-        OSMutexPend(DSPI_1_Device_Data.Mut_DSPI_1, 0, &err3);
-        DSPI_1_Device_Data.CB_TX_Complete = &Resume_Task_OLED_Flush_Mem;
-        Enable_INTC_DSPI_SR_EOQF(DSPI_1_Device_Data.dspi);
-        OLED_PIN_DC = OLED_DC_COMMAND;
-        for (i = 0; i < sizeof(cmds); i += DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
-        {
-            int remain = 0;
-            
-            remain = sizeof(cmds) - i;
-            DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmds, (remain < DSPI_ASYNC_SEND_DATA_MAX_LENGTH ? remain : DSPI_ASYNC_SEND_DATA_MAX_LENGTH));
-            OSTaskSuspend(OS_PRIO_SELF);
-        }
-        Disable_INTC_DSPI_SR_EOQF(DSPI_1_Device_Data.dspi);
-        DSPI_1_Device_Data.CB_TX_Complete = NULL;
-        OSMutexPost(DSPI_1_Device_Data.Mut_DSPI_1);
-    }
-    while (1)
-    {
-        LED2 = ~LED2;
-        OSTaskSuspend(OS_PRIO_SELF);
-        OSMutexPend(OLED_Display_Memory.Mutex_Pages, 0, &err1);
-        OSMutexPend(DSPI_1_Device_Data.Mut_DSPI_1, 0, &err2);
-        DSPI_1_Device_Data.CB_TX_Complete = &Resume_Task_OLED_Flush_Mem;
-        Enable_INTC_DSPI_SR_EOQF(DSPI_1_Device_Data.dspi);
-        for (i = 0; i < OLED_PAGE_MAX; i++)
-        {
-            if (!OLED_Display_Memory.page[i].dirty_seg_cnt)
-            {
-                int j = 0;
-                uint8_t cmd[] = {0x00, 0x00, 0x00};
-
-                OLED_PIN_DC = OLED_DC_COMMAND;
-                cmd[0] = 0xB0 + (uint8_t)i;
-                cmd[1] = ((OLED_Display_Memory.page[i].dirty_seg_start & 0xF0) >> 4) | 0x10;
-                cmd[2] = (OLED_Display_Memory.page[i].dirty_seg_start & 0x0F);
-                OLED_PIN_DC = OLED_DC_COMMAND;
-                DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmd, sizeof(cmd));
-                OSTaskSuspend(OS_PRIO_SELF);
-                OLED_PIN_DC = OLED_DC_DATA;
-                for (j = 0; j < OLED_Display_Memory.page[i].dirty_seg_cnt; j += DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
-                {
-                    int remain = 0;
-                    
-                    remain = OLED_Display_Memory.page[i].dirty_seg_cnt - i * DSPI_ASYNC_SEND_DATA_MAX_LENGTH;
-                    DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, OLED_Display_Memory.page[i].data, (remain < DSPI_ASYNC_SEND_DATA_MAX_LENGTH ? remain : DSPI_ASYNC_SEND_DATA_MAX_LENGTH));
-                    OSTaskSuspend(OS_PRIO_SELF);
-                }
-            }
-        }
-        Disable_INTC_DSPI_SR_EOQF(DSPI_1_Device_Data.dspi);
-        DSPI_1_Device_Data.CB_TX_Complete = NULL;
-        OSMutexPost(DSPI_1_Device_Data.Mut_DSPI_1);
-        OSMutexPost(OLED_Display_Memory.Mutex_Pages);
-    }
-}
+//void Task_OLED_Flush_Mem(void *p_arg)
+//{
+//    INT8U err1 = 0, err2 = 0, err3 = 0;
+//    int i = 0;
+//    
+//    (void) p_arg;
+//    {
+//        OLED_PIN_RST = 0;
+//        OSTimeDly(100);
+//        OLED_PIN_RST = 1;
+//        OSTimeDly(5);
+//    }
+//    {
+//        uint8_t cmds[] = {0xae, 0x00, 0x10, 0x40, 0x81, 0xcf, 0xa1, 0xc8, 0xa6, 0xa8, 0x3f, 0xd3, 0x00, 0xd5, 0x80, 0xd9, 0xf1, 0xda, 0x12, 0xdb, 0x40, 0x20, 0x02, 0x8d, 0x14, 0xa4, 0xa6, 0xaf, };
+//        int i = 0;
+//        INT8U err1 = 0;
+//        uint32_t test1234[] = {0x12345678, 0xECECECEC};
+//        
+//        Dummy((uint8_t *)test1234);
+//        OSMutexPend(DSPI_1_Device_Data.Mut_DSPI_1, 0, &err3);
+//        DSPI_1_Device_Data.CB_TX_Complete = &Resume_Task_OLED_Flush_Mem;
+//        Enable_INTC_DSPI_SR_EOQF(DSPI_1_Device_Data.dspi);
+//        OLED_PIN_DC = OLED_DC_COMMAND;
+//        for (i = 0; i < sizeof(cmds); i += DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
+//        {
+//            int remain = 0;
+//            
+//            remain = sizeof(cmds) - i;
+//            DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmds, (remain < DSPI_ASYNC_SEND_DATA_MAX_LENGTH ? remain : DSPI_ASYNC_SEND_DATA_MAX_LENGTH));
+//            OSTaskSuspend(OS_PRIO_SELF);
+//        }
+//        Disable_INTC_DSPI_SR_EOQF(DSPI_1_Device_Data.dspi);
+//        DSPI_1_Device_Data.CB_TX_Complete = NULL;
+//        OSMutexPost(DSPI_1_Device_Data.Mut_DSPI_1);
+//    }
+//    while (1)
+//    {
+//        LED2 = ~LED2;
+//        OSTaskSuspend(OS_PRIO_SELF);
+//        OSMutexPend(OLED_Display_Memory.Mutex_Pages, 0, &err1);
+//        OSMutexPend(DSPI_1_Device_Data.Mut_DSPI_1, 0, &err2);
+//        DSPI_1_Device_Data.CB_TX_Complete = &Resume_Task_OLED_Flush_Mem;
+//        Enable_INTC_DSPI_SR_EOQF(DSPI_1_Device_Data.dspi);
+//        for (i = 0; i < OLED_PAGE_MAX; i++)
+//        {
+//            if (!OLED_Display_Memory.page[i].dirty_seg_cnt)
+//            {
+//                int j = 0;
+//                uint8_t cmd[] = {0x00, 0x00, 0x00};
+//
+//                OLED_PIN_DC = OLED_DC_COMMAND;
+//                cmd[0] = 0xB0 + (uint8_t)i;
+//                cmd[1] = ((OLED_Display_Memory.page[i].dirty_seg_start & 0xF0) >> 4) | 0x10;
+//                cmd[2] = (OLED_Display_Memory.page[i].dirty_seg_start & 0x0F);
+//                OLED_PIN_DC = OLED_DC_COMMAND;
+//                DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmd, sizeof(cmd));
+//                OSTaskSuspend(OS_PRIO_SELF);
+//                OLED_PIN_DC = OLED_DC_DATA;
+//                for (j = 0; j < OLED_Display_Memory.page[i].dirty_seg_cnt; j += DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
+//                {
+//                    int remain = 0;
+//                    
+//                    remain = OLED_Display_Memory.page[i].dirty_seg_cnt - i * DSPI_ASYNC_SEND_DATA_MAX_LENGTH;
+//                    DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, OLED_Display_Memory.page[i].data, (remain < DSPI_ASYNC_SEND_DATA_MAX_LENGTH ? remain : DSPI_ASYNC_SEND_DATA_MAX_LENGTH));
+//                    OSTaskSuspend(OS_PRIO_SELF);
+//                }
+//            }
+//        }
+//        Disable_INTC_DSPI_SR_EOQF(DSPI_1_Device_Data.dspi);
+//        DSPI_1_Device_Data.CB_TX_Complete = NULL;
+//        OSMutexPost(DSPI_1_Device_Data.Mut_DSPI_1);
+//        OSMutexPost(OLED_Display_Memory.Mutex_Pages);
+//    }
+//}
 
 
 void Test_OLED_Init(void)

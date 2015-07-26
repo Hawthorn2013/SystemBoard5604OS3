@@ -302,36 +302,16 @@ extern void INTC_Handler_OSTickISR(void);
 **************************************************************************************************************
 */
 
-extern int Init_DSPI(volatile struct DSPI_tag *dspi);
-extern int Init_DSPI_1(void);
-extern int Set_DSPI_1_Pin(void);
-extern void INTC_Handler_DSPI_1_SR_TFUF_RFOF(void);
-extern void INTC_Handler_DSPI_1_SR_EOQF(void);
-extern void INTC_Handler_DSPI_1_SR_TFFF(void);
-extern void INTC_Handler_DSPI_1_SR_TCF(void);
-extern void INTC_Handler_DSPI_1_SR_RFDF(void);
-extern int Disable_INTC_DSPI_SR_All(volatile struct DSPI_tag *dspi);
-extern int Enable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi);
-extern int Disable_INTC_DSPI_SR_TFUF(volatile struct DSPI_tag *dspi);
-extern int Enable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi);
-extern int Disable_INTC_DSPI_SR_RFOF(volatile struct DSPI_tag *dspi);
-extern int Enable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi);
-extern int Disable_INTC_DSPI_SR_EOQF(volatile struct DSPI_tag *dspi);
-extern int Enable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi);
-extern int Disable_INTC_DSPI_SR_TFFF(volatile struct DSPI_tag *dspi);
-extern int Enable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi);
-extern int Disable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi);
-extern int Enable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi);
-extern int Disable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi);
-extern int Open_DSPI_Dev(struct DSPI_Device_Data *dev);
-extern int Close_DSPI(struct DSPI_Device_Data *dev);
-extern int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int lsbfe,int pcssck,int pasc,int pdt,int pbr,int cssck,int asc,int dt,int br);
-extern int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs);
-extern int DSPI_SYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt);
-extern int Set_DSPI_Callback_TX_Complete(struct DSPI_Device_Data *dev, void(*fun)(void));
-extern int DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt);
-extern void Test_DSPI_1_Send_Data(void);
-extern void Test_DSPI_1_Send_Ex2(uint8_t data[], int cnt);
+extern      int                 Init_DSPI(volatile struct DSPI_tag *dspi);
+extern      int                 Init_DSPI_1(void);
+extern      int                 Set_DSPI_1_Pin(void);
+extern      int                 Open_DSPI_Dev(struct DSPI_Device_Data *dev);
+extern      int                 Close_DSPI(struct DSPI_Device_Data *dev);
+extern      int                 Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int lsbfe,int pcssck,int pasc,int pdt,int pbr,int cssck,int asc,int dt,int br);
+extern      int                 Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs);
+extern      int                 DSPI_SYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt);
+extern      int                 Set_DSPI_Callback_TX_Complete(struct DSPI_Device_Data *dev, void(*fun)(void));
+extern      int                 DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt);
 
 /*
 *********************************************************************************************************

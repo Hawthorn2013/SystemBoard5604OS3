@@ -32,10 +32,10 @@
 //                   (void *)0,
 //                   &Test4TaskStk[Test4_TASK_STK_SIZE-1],
 //                   TEST4_TASK_PRIO );
-    OSTaskCreate(  Task_OLED_Flush_Mem,
-                   (void *)0,
-                   &TaskStk_OLED_Flush_Mem[TASK_STK_SIZE_OLED_FLUSH_MEM-1],
-                   TASK_PRIO_OLED_FLUSH_MEM );
+//    OSTaskCreate(  Task_OLED_Flush_Mem,
+//                   (void *)0,
+//                   &TaskStk_OLED_Flush_Mem[TASK_STK_SIZE_OLED_FLUSH_MEM-1],
+//                   TASK_PRIO_OLED_FLUSH_MEM );
     OSStart();	/* Start multitasking (i.e. give control to uC/OS-II)       */
 
 
