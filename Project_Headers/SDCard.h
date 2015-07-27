@@ -22,8 +22,9 @@
 #define SDCARD_DSPI_CTAR_ASC                            (0b0111)
 #define SDCARD_DSPI_CTAR_DT                             (0b0010)
 #define SDCARD_DSPI_CTAR_BR                             (0b0110)
-
+#define SDCARD_SECTOR_SIZE                              (512)
 
 extern      int                 Test_SDCard(void);
 extern      int                 Test_SDCard_Send_Cmd(int cmd, uint32_t var, uint32_t *rev);
 extern      int                 Reset_SDCard(void);
+extern      int                 Test_SDCard_Read_Block(uint32_t sector, uint8_t btffer[]);
