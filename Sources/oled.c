@@ -180,23 +180,23 @@ void Test_OLED_Init(void)
     {
         uint8_t cmd[] = {0xae, 0x00, 0x10, 0x40, 0x81, 0xcf, 0xa1, 0xc8, 0xa6, 0xa8, 0x3f, 0xd3, 0x00, 0xd5, 0x80, 0xd9, 0xf1, 0xda, 0x12, 0xdb, 0x40, 0x20, 0x02, 0x8d, 0x14, 0xa4, 0xa6, 0xaf, };
         
-        DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmd, 7);
+        DSPI_ASYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, cmd, NULL, 7);
         while (!async_completed) {}
         async_completed = 0;
-        DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmd + 7, 6);
+        DSPI_ASYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, cmd + 7, NULL, 6);
         while (!async_completed) {}
         async_completed = 0;
-        DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmd + 13, 5);
+        DSPI_ASYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, cmd + 13, NULL, 5);
         while (!async_completed) {}
         async_completed = 0;
-        DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmd + 18, 4);
+        DSPI_ASYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, cmd + 18, NULL, 4);
         while (!async_completed) {}
         async_completed = 0;
         DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, cmd + 22, NULL, 3);
-        DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmd + 25, 2);
+        DSPI_ASYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, cmd + 25, NULL, 2);
         while (!async_completed) {}
         async_completed = 0;
-        DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmd + 27, 1);
+        DSPI_ASYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, cmd + 27, NULL, 1);
         while (!async_completed) {}
         async_completed = 0;
     }
@@ -228,7 +228,7 @@ void Test_OLED_Init(void)
                 cmd[0] = (uint8_t)(0xb0 + y);
                 cmd[1] = 0x00;
                 cmd[2] = 0x10;
-                DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, cmd, 3);
+                DSPI_ASYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, cmd, NULL, 3);
                 while (!async_completed) {}
                 async_completed = 0;
                 for(x = 0; x < OLED_SEG_MAX / DSPI_ASYNC_SEND_DATA_MAX_LENGTH; x++)
@@ -238,13 +238,13 @@ void Test_OLED_Init(void)
                     {
                         if (y%2)
                         {
-                            DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, data1, 8);
+                            DSPI_ASYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, data1, NULL, 8);
                             while (!async_completed) {}
                             async_completed = 0;
                         }
                         else
                         {
-                            DSPI_ASYNC_Send_Data(&DSPI_1_Device_Data, data2, 8);
+                            DSPI_ASYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, data2, NULL, 8);
                             while (!async_completed) {}
                             async_completed = 0;
                         }

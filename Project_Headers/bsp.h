@@ -309,10 +309,9 @@ extern      int                 Open_DSPI_Dev(struct DSPI_Device_Data *dev);
 extern      int                 Close_DSPI(struct DSPI_Device_Data *dev);
 extern      int                 Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int lsbfe,int pcssck,int pasc,int pdt,int pbr,int cssck,int asc,int dt,int br);
 extern      int                 Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs);
-extern      int                 DSPI_SYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt);
 extern      int                 Set_DSPI_Callback_TX_Complete(struct DSPI_Device_Data *dev, void(*fun)(void));
 extern      int                 DSPI_SYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt);
-extern      int                 DSPI_ASYNC_Send_Data(struct DSPI_Device_Data *dev, uint8_t data[], int cnt);
+extern      int                 DSPI_ASYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt);
 
 /*
 *********************************************************************************************************
