@@ -798,9 +798,13 @@ int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int 
 
 int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs)
 {
+    if (DSPI_PUSHR_PCS_ALL < pcs || DSPI_PUSHR_PCS_NONE > pcs)
+    {
+        return DSPI_ERR_PUSHR_PCS_INVALID;
+    }
     dev->PUSHR.B.CONT = cont;
     dev->PUSHR.R &= 0xFFC0FFFF;
-    dev->PUSHR.R |= (uint32_t)0x00000001 << (16 + pcs);
+    dev->PUSHR.R |= (uint32_t)pcs << 16;
     return DSPI_ERR_NONE;
 }
 

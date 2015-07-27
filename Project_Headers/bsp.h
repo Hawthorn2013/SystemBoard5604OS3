@@ -159,6 +159,15 @@
 #define DSPI_ERR_NONE                               (0)
 #define DSPI_ERR_DEVICE_BUSY                        (1)
 #define DSPI_ERR_TX_DATA_TOO_LONG                   (2)
+#define DSPI_ERR_PUSHR_PCS_INVALID                  (3)
+#define DSPI_PUSHR_PCS_NONE                         (0b00000000)
+#define DSPI_PUSHR_PCS_0                            (0b00000001)
+#define DSPI_PUSHR_PCS_1                            (0b00000010)
+#define DSPI_PUSHR_PCS_2                            (0b00000100)
+#define DSPI_PUSHR_PCS_3                            (0b00001000)
+#define DSPI_PUSHR_PCS_4                            (0b00010000)
+#define DSPI_PUSHR_PCS_5                            (0b00100000)
+#define DSPI_PUSHR_PCS_ALL                          (DSPI_PUSHR_PCS_0 | DSPI_PUSHR_PCS_1 | DSPI_PUSHR_PCS_2 | DSPI_PUSHR_PCS_3 | DSPI_PUSHR_PCS_4 | DSPI_PUSHR_PCS_5)
 extern struct DSPI_Device_Data
 {
     uint32_t block[32];

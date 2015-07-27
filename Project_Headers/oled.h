@@ -26,7 +26,7 @@
 #define OLED_DSPI_PUSHR_CTAS                            (3)
 #define OLED_DSPI_PUSHR_EOQ                             (0)
 #define OLED_DSPI_PUSHR_CTCNT                           (0)
-#define OLED_DSPI_PUSHR_PCS                             (1)
+#define OLED_DSPI_PUSHR_PCS                             (DSPI_PUSHR_PCS_1)
 #define OLED_DSPI_PUSHR                                 ((uint32_t)(0x00000000) | (OLED_DSPI_PUSHR_CONT << 15) | (OLED_DSPI_PUSHR_CTAS << 12) | (OLED_DSPI_PUSHR_EOQ << 11) | (1 << PCS))
 #define OLED_DSPI_CTAR_DBR                              (0b0)
 #define OLED_DSPI_CTAR_CPOL                             (0b0)
