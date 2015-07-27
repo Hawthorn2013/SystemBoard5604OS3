@@ -23,4 +23,5 @@
 #include      "ucos_ii.h"
 #include      "bsp.h"
 #include      "oled.h"
+#include        "SDCard.h"
 #include	  "TestTask.h"
