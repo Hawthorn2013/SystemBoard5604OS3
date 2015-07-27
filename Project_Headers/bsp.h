@@ -302,9 +302,7 @@ extern void INTC_Handler_OSTickISR(void);
 **************************************************************************************************************
 */
 
-extern      int                 Init_DSPI(volatile struct DSPI_tag *dspi);
 extern      int                 Init_DSPI_1(void);
-extern      int                 Set_DSPI_1_Pin(void);
 extern      int                 Open_DSPI_Dev(struct DSPI_Device_Data *dev);
 extern      int                 Close_DSPI(struct DSPI_Device_Data *dev);
 extern      int                 Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int lsbfe,int pcssck,int pasc,int pdt,int pbr,int cssck,int asc,int dt,int br);

@@ -21,6 +21,8 @@ OS_EVENT Sem_DSPI_1;
 struct DSPI_Device_Data DSPI_1_Device_Data;
 
 
+static      int                 Init_DSPI(volatile struct DSPI_tag *dspi);
+static      int                 Set_DSPI_1_Pin(void);
 static      void                INTC_Handler_DSPI_1_SR_TFUF_RFOF(void);
 static      void                INTC_Handler_DSPI_1_SR_EOQF(void);
 static      void                INTC_Handler_DSPI_1_SR_TFFF(void);
@@ -39,6 +41,7 @@ static      int                 Enable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag
 static      int                 Disable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi);
 static      int                 Enable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi);
 static      int                 Disable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi);
+static      int                 DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt);
 
 
 /*
@@ -534,7 +537,7 @@ void INTC_Handler_OSTickISR(void)
 }
 
 
-int Init_DSPI(volatile struct DSPI_tag *dspi)
+static int Init_DSPI(volatile struct DSPI_tag *dspi)
 {
     dspi->MCR.R = 0x803f0001;
     dspi->RSER.R = 0x00000000;
@@ -556,7 +559,7 @@ int Init_DSPI_1(void)
 }
 
 
-int Set_DSPI_1_Pin(void)
+static int Set_DSPI_1_Pin(void)
 {
     SIU.PCR[34].R = 0x0604; //PC2 SCK_1
     //SIU.PSMI[7].R = 0;    //SCK_1 PCR[34]
@@ -801,51 +804,13 @@ int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs)
 
 int DSPI_SYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt)
 {
-    int quotient, remainder, i, rev_cnt = 0;
+    int res = 0;
     
-    if (dev->dspi->SR.B.TXCTR)
-    {
-        return 1;
-    }
-    if (cnt > DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
-    {
-        return 2;
-    }
-    dev->PUSHR.B.CTAS = 0;
     dev->PUSHR.B.EOQ = 0;
     Disable_INTC_DSPI_SR_EOQF(dev->dspi);
-    quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
-    remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
-    for (i = 0; i < quotient; i++)
+    if (0 != (res = DSPI_Push_Data_to_Empty_FIFO(dev, send_data, rev_data, cnt)))
     {
-        if (!remainder && i == quotient - 1)
-        {
-            dev->PUSHR.B.EOQ = 1;
-        }
-        dev->PUSHR.B.TXDATA = *((uint16_t *)(send_data) +i);
-        dev->dspi->PUSHR.R = dev->PUSHR.R;
-        if (NULL != rev_data)
-        {
-            uint32_t popr;
-            
-            popr = dev->dspi->POPR.R;
-            rev_data[rev_cnt++] = *((uint8_t *)&popr + 2);
-            rev_data[rev_cnt++] = *((uint8_t *)&popr + 3);
-        }
-    }
-    if (remainder)
-    {
-        dev->PUSHR.B.EOQ = 1;
-        dev->PUSHR.B.CTAS = 1;
-        dev->PUSHR.B.TXDATA = (uint32_t)*(send_data + i * DSPI_PUSHR_MAX_BYTE_AMOUNT);
-        dev->dspi->PUSHR.R = dev->PUSHR.R;
-        if (NULL != rev_data)
-        {
-            uint32_t popr;
-            
-            popr = dev->dspi->POPR.R;
-            rev_data[rev_cnt++] = *((uint8_t *)&popr + 3);
-        }
+        return res;
     }
     while(!dev->dspi->SR.B.EOQF) {}
     dev->dspi->SR.B.EOQF = 1;
@@ -864,6 +829,20 @@ int Set_DSPI_Callback_TX_Complete(struct DSPI_Device_Data *dev, void(*fun)(void)
 
 int DSPI_ASYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt)
 {
+    int res = 0;
+    
+    dev->PUSHR.B.EOQ = 0;
+    Enable_INTC_DSPI_SR_EOQF(dev->dspi);
+    if (0 != (res = DSPI_Push_Data_to_Empty_FIFO(dev, send_data, rev_data, cnt)))
+    {
+        return res;
+    }
+    return 0;
+}
+
+
+int DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt)
+{
     int quotient, remainder, i, rev_cnt = 0;
     
     if (dev->dspi->SR.B.TXCTR)
@@ -876,7 +855,6 @@ int DSPI_ASYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_
     }
     dev->PUSHR.B.CTAS = 0;
     dev->PUSHR.B.EOQ = 0;
-    Enable_INTC_DSPI_SR_EOQF(dev->dspi);
     quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
     remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
     for (i = 0; i < quotient; i++)
