@@ -43,6 +43,7 @@ int Test_SDCard_Send_Cmd(int cmd, uint32_t var, uint32_t *rev)
     }
     while (0xFF == send[7]);
     *rev = send[7];
+//    Set_DSPI_PUSHR(&DSPI_1_Device_Data, SDCARD_DSPI_PUSHR_CONT, DSPI_PUSHR_PCS_NONE);
 //    DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, NULL, 1);
 }
 
@@ -84,6 +85,7 @@ int Test_SDCard_Read_Block(uint32_t sector, uint8_t buffer[])
     {
         return (int)rev;
     }
+    Set_DSPI_PUSHR(&DSPI_1_Device_Data, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     while(1)
     {
         int i = 0, ok = 0;

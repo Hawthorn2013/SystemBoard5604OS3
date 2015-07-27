@@ -812,6 +812,7 @@ int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs)
 int DSPI_SYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt)
 {
     int res = DSPI_ERR_NONE;
+    uint8_t popr[DSPI_ASYNC_SEND_DATA_MAX_LENGTH];
     
     dev->PUSHR.B.EOQ = 0;
     Disable_INTC_DSPI_SR_EOQF(dev->dspi);
@@ -821,6 +822,29 @@ int DSPI_SYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_d
     }
     while(!dev->dspi->SR.B.EOQF) {}
     dev->dspi->SR.B.EOQF = 1;
+    {
+        int quotient, remainder, i, rev_cnt = 0;
+        
+        quotient = cnt / DSPI_PUSHR_MAX_BYTE_AMOUNT;
+        remainder = cnt % DSPI_PUSHR_MAX_BYTE_AMOUNT;
+        for (i = 0; i < quotient; i++)
+        {
+            *(uint16_t *)(popr + rev_cnt) = (uint16_t)(dev->dspi->POPR.R);
+            rev_cnt += 2;
+        }
+        if (remainder)
+        {
+            *(uint8_t *)(popr + rev_cnt) = (uint8_t)(dev->dspi->POPR.R);
+            rev_cnt++;
+        }
+        if (NULL != rev_data)
+        {
+            while (rev_cnt--)
+            {
+                rev_data[rev_cnt] = popr[rev_cnt];
+            }
+        }
+    }
     return DSPI_ERR_NONE;
 }
 
@@ -873,14 +897,6 @@ int DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t send_data
         }
         dev->PUSHR.B.TXDATA = *((uint16_t *)(send_data) +i);
         dev->dspi->PUSHR.R = dev->PUSHR.R;
-        if (NULL != rev_data)
-        {
-            uint32_t popr;
-            
-            popr = dev->dspi->POPR.R;
-            rev_data[rev_cnt++] = *((uint8_t *)&popr + 2);
-            rev_data[rev_cnt++] = *((uint8_t *)&popr + 3);
-        }
     }
     if (remainder)
     {
@@ -888,13 +904,6 @@ int DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t send_data
         dev->PUSHR.B.CTAS = 1;
         dev->PUSHR.B.TXDATA = (uint32_t)*(send_data + i * DSPI_PUSHR_MAX_BYTE_AMOUNT);
         dev->dspi->PUSHR.R = dev->PUSHR.R;
-        if (NULL != rev_data)
-        {
-            uint32_t popr;
-            
-            popr = dev->dspi->POPR.R;
-            rev_data[rev_cnt++] = *((uint8_t *)&popr + 3);
-        }
     }
     return DSPI_ERR_NONE;
 }
