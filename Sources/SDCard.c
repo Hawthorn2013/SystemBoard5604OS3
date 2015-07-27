@@ -9,7 +9,7 @@
 #include        "includes.h"
 
 
-static      uint8_t             Test_SD_Buff[512];
+static      uint8_t             Test_SD_Buff[4][SDCARD_SECTOR_SIZE];
 
 
 int Test_SDCard(void)
@@ -18,8 +18,9 @@ int Test_SDCard(void)
     Set_DSPI_CTAR(&DSPI_1_Device_Data, SDCARD_DSPI_CTAR_DBR, SDCARD_DSPI_CTAR_CPOL, SDCARD_DSPI_CTAR_CPHA, SDCARD_DSPI_CTAR_LSBFE, SDCARD_DSPI_CTAR_PCSSCK, SDCARD_DSPI_CTAR_PASC, SDCARD_DSPI_CTAR_PDT, SDCARD_DSPI_CTAR_PBR, SDCARD_DSPI_CTAR_CSSCK, SDCARD_DSPI_CTAR_ASC, SDCARD_DSPI_CTAR_DT, SDCARD_DSPI_CTAR_BR);
     Set_DSPI_PUSHR(&DSPI_1_Device_Data, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     Reset_SDCard();
-    Test_SDCard_Read_Block(1, Test_SD_Buff);
-    Test_SDCard_Read_Block(0, Test_SD_Buff);
+    Test_SDCard_Read_Block(1, Test_SD_Buff[0]);
+    Test_SDCard_Read_Block(0, Test_SD_Buff[1]);
+    Test_SDCard_Read_Mult_Block(0, (uint8_t (*)[SDCARD_SECTOR_SIZE])(Test_SD_Buff[2]), 2);
 }
 
 
@@ -88,13 +89,13 @@ int Test_SDCard_Read_Block(uint32_t sector, uint8_t buffer[])
         DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, buffer, 8);
         for (i = 0; i < 8; i++)
         {
-            if (0xFE == Test_SD_Buff[i])
+            if (0xFE == buffer[i])
             {
                 int j = 0;
                 i++;
                 for (j = 0; j < 8 - i; j++)
                 {
-                    Test_SD_Buff[j] = Test_SD_Buff[j + i];
+                    buffer[j] = buffer[j + i];
                 }
                 DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, buffer + j, 8 - j);
                 ok = 1;
@@ -115,7 +116,40 @@ int Test_SDCard_Read_Block(uint32_t sector, uint8_t buffer[])
 }
 
 
-
+int Test_SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt)
+{
+    uint32_t rev = 0x00000000;
+    int i = 0, j = 0;
+    uint8_t send[8] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
+    
+    Test_SDCard_Send_Cmd(18, sector<<9, &rev);
+    if (0x00 != rev)
+    {
+        return (int)rev;
+    }
+    Set_DSPI_PUSHR(&DSPI_1_Device_Data, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
+    
+    for (i = 0; i < block_cnt; i++)
+    {
+        while(1)
+        {
+            uint8_t res = 0x00;
+            DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, &res, 1);
+            if (0xFE == res)
+            {
+                break;
+            }
+        }
+        for (j = 0; j < SDCARD_SECTOR_SIZE / DSPI_ASYNC_SEND_DATA_MAX_LENGTH; j++)
+        {
+            
+            DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, &buffer[i][DSPI_ASYNC_SEND_DATA_MAX_LENGTH * j], DSPI_ASYNC_SEND_DATA_MAX_LENGTH);
+        }
+        DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, NULL, 2);
+    }
+    Test_SDCard_Send_Cmd(12, 0, &rev);
+    return 0;
+}
 
 
 
