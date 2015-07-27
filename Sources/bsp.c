@@ -556,6 +556,7 @@ int Init_DSPI_1(void)
 //    INTC_InstallINTCInterruptHandler(INTC_Handler_DSPI_1_SR_RFDF, IRQ_DSPI_1_SR_RFDF, INTC_PRIORITY_DSPI_1_SR_RFDF);
     DSPI_1_Device_Data.CB_TX_Complete = NULL;
     DSPI_1_Device_Data.dspi = &DSPI_1;
+    return DSPI_ERR_NONE;
 }
 
 
@@ -758,6 +759,7 @@ int Open_DSPI_Dev(struct DSPI_Device_Data *dev)
     Disable_INTC_DSPI_SR_All(dev->dspi);
     dev->dspi->SR.R         = 0x00000000;
     dev->CB_TX_Complete     = NULL;
+    return DSPI_ERR_NONE;
 }
 
 
@@ -766,6 +768,7 @@ int Close_DSPI(struct DSPI_Device_Data *dev)
     Disable_INTC_DSPI_SR_All(dev->dspi);
     dev->dspi->SR.R         = 0x00000000;
     dev->CB_TX_Complete     = NULL;
+    return DSPI_ERR_NONE;
 }
 
 
@@ -789,7 +792,7 @@ int Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int 
     dev->CTAR.B.FMSZ = DSPI_CTAR_FMSZ_1BYTE;
     dev->dspi->CTAR[1].R = dev->CTAR.R;
     dev->dspi->MCR.B.HALT = 0;
-    return 0;
+    return DSPI_ERR_NONE;
 }
 
 
@@ -798,23 +801,23 @@ int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs)
     dev->PUSHR.B.CONT = cont;
     dev->PUSHR.R &= 0xFFC0FFFF;
     dev->PUSHR.R |= (uint32_t)0x00000001 << (16 + pcs);
-    return 0;
+    return DSPI_ERR_NONE;
 }
 
 
 int DSPI_SYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt)
 {
-    int res = 0;
+    int res = DSPI_ERR_NONE;
     
     dev->PUSHR.B.EOQ = 0;
     Disable_INTC_DSPI_SR_EOQF(dev->dspi);
-    if (0 != (res = DSPI_Push_Data_to_Empty_FIFO(dev, send_data, rev_data, cnt)))
+    if (DSPI_ERR_NONE != (res = DSPI_Push_Data_to_Empty_FIFO(dev, send_data, rev_data, cnt)))
     {
         return res;
     }
     while(!dev->dspi->SR.B.EOQF) {}
     dev->dspi->SR.B.EOQF = 1;
-    return 0;
+    return DSPI_ERR_NONE;
 }
 
 
@@ -824,20 +827,21 @@ int DSPI_SYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_d
 int Set_DSPI_Callback_TX_Complete(struct DSPI_Device_Data *dev, void(*fun)(void))
 {
     dev->CB_TX_Complete = fun;
+    return DSPI_ERR_NONE;
 }
 
 
 int DSPI_ASYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt)
 {
-    int res = 0;
+    int res = DSPI_ERR_NONE;
     
     dev->PUSHR.B.EOQ = 0;
     Enable_INTC_DSPI_SR_EOQF(dev->dspi);
-    if (0 != (res = DSPI_Push_Data_to_Empty_FIFO(dev, send_data, rev_data, cnt)))
+    if (DSPI_ERR_NONE != (res = DSPI_Push_Data_to_Empty_FIFO(dev, send_data, rev_data, cnt)))
     {
         return res;
     }
-    return 0;
+    return DSPI_ERR_NONE;
 }
 
 
@@ -847,11 +851,11 @@ int DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t send_data
     
     if (dev->dspi->SR.B.TXCTR)
     {
-        return 1;
+        return DSPI_ERR_DEVICE_BUSY;
     }
     if (cnt > DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
     {
-        return 2;
+        return DSPI_ERR_TX_DATA_TOO_LONG;
     }
     dev->PUSHR.B.CTAS = 0;
     dev->PUSHR.B.EOQ = 0;
@@ -888,7 +892,7 @@ int DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t send_data
             rev_data[rev_cnt++] = *((uint8_t *)&popr + 3);
         }
     }
-    return 0;
+    return DSPI_ERR_NONE;
 }
 
 

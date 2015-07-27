@@ -156,6 +156,9 @@
 #define DSPI_CTAR_FMSZ_2BYTES                       (0b1111)
 #define DSPI_CTAR_FMSZ_1BYTE                        (0b0111)
 #define DSPI_1_MUTEX_PRIO                           (5)
+#define DSPI_ERR_NONE                               (0)
+#define DSPI_ERR_DEVICE_BUSY                        (1)
+#define DSPI_ERR_TX_DATA_TOO_LONG                   (2)
 extern struct DSPI_Device_Data
 {
     uint32_t block[32];
