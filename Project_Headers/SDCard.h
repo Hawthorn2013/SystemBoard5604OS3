@@ -24,6 +24,16 @@
 #define SDCARD_DSPI_CTAR_BR                             (0b0110)
 #define SDCARD_SECTOR_SIZE                              (512)
 #define SDCARD_ERR_WRITE_BLOCK_FAILED                   (1)
+
+
+typedef struct
+{
+    struct DSPI_Device_Data *DSPI_dev;
+} SDCard_Dev_Data;
+
+
+
+extern      int                 Set_DSPI_Device(struct DSPI_Device_Data *dspi);
 extern      int                 Test_SDCard(void);
 extern      int                 Test_SDCard_Send_Cmd(int cmd, uint32_t var, uint32_t *rev);
 extern      int                 Reset_SDCard(void);
