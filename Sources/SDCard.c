@@ -65,7 +65,7 @@ int Test_SDCard(void)
     {
         rev = Test_SDCard_Read_Block(5, Test_SD_Buff[3]);
     }
-    while(rev);
+    while(1);
 }
 
 
@@ -132,29 +132,14 @@ int Test_SDCard_Read_Block(uint32_t sector, uint8_t buffer[])
     Set_DSPI_PUSHR(&DSPI_1_Device_Data, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     while(1)
     {
-        int i = 0, ok = 0;
-        DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, buffer, 8);
-        for (i = 0; i < 8; i++)
-        {
-            if (0xFE == buffer[i])
-            {
-                int j = 0;
-                i++;
-                for (j = 0; j < 8 - i; j++)
-                {
-                    buffer[j] = buffer[j + i];
-                }
-                DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, buffer + j, 8 - j);
-                ok = 1;
-                break;
-            }
-        }
-        if (ok)
+        uint8_t res = 0x00;
+        DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, &res, 1);
+        if (0xFE == res)
         {
             break;
         }
     }
-    for (i = 1; i < SDCARD_SECTOR_SIZE / DSPI_ASYNC_SEND_DATA_MAX_LENGTH; i++)
+    for (i = 0; i < SDCARD_SECTOR_SIZE / DSPI_ASYNC_SEND_DATA_MAX_LENGTH; i++)
     {
         DSPI_SYNC_Send_and_Receive_Data(&DSPI_1_Device_Data, send, buffer + DSPI_ASYNC_SEND_DATA_MAX_LENGTH * i, DSPI_ASYNC_SEND_DATA_MAX_LENGTH);
     }
