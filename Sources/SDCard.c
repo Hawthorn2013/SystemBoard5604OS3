@@ -93,9 +93,6 @@ static int Test_SDCard_Send_CMD0(uint32_t *rev)
     uint8_t cmd0[6] = {0x40, 0x00, 0x00, 0x00, 0x00, 0x95, };
     uint32_t res = 0x00000000;
     
-    Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, DSPI_PUSHR_PCS_NONE);
-    DSPI_SYNC_Send_and_Receive_Data(SDCard_Dev_Data_1.DSPI_dev, send, NULL, 8);
-    DSPI_SYNC_Send_and_Receive_Data(SDCard_Dev_Data_1.DSPI_dev, send, NULL, 2);
     Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     DSPI_SYNC_Send_and_Receive_Data(SDCard_Dev_Data_1.DSPI_dev, cmd0, NULL, 6);
     do
