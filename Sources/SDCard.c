@@ -11,6 +11,8 @@
 
 static      uint8_t                         Test_SD_Buff[4][SDCARD_SECTOR_SIZE];
 static      SDCard_Dev_Data                 SDCard_Dev_Data_1;
+
+extern      int                             Test_SDCard_Send_CMD0(uint32_t *rev);
 static      int                             Rev_8_Bytes(uint8_t data[]);
 static      int                             Send_8_Bytes(uint8_t data[]);
 static      int                             Send_8_Clocks_withoout_CS(void);
@@ -85,7 +87,7 @@ int Test_SDCard(void)
 }
 
 
-int Test_SDCard_Send_CMD0(uint32_t *rev)
+static int Test_SDCard_Send_CMD0(uint32_t *rev)
 {
     uint8_t send[8] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, };
     uint8_t cmd0[6] = {0x40, 0x00, 0x00, 0x00, 0x00, 0x95, };
@@ -136,7 +138,7 @@ int Reset_SDCard(void)
     Send_80_Clocks_withoout_CS();
     do
     {
-        Test_SDCard_Send_Cmd(0, 0, &rev);
+        Test_SDCard_Send_CMD0(&rev);
     }
     while (0x01 != rev);
     do
