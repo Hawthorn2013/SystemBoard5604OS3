@@ -24,6 +24,10 @@
 #define SDCARD_DSPI_CTAR_BR                             (0b0110)
 #define SDCARD_SECTOR_SIZE                              (512)
 #define SDCARD_ERR_WRITE_BLOCK_FAILED                   (1)
+#define SDCARD_OVERTIME_DEFAULT                         (1000)
+#define SDCARD_OVERTIME_READ                            (100)
+#define SDCARD_OVERTIME_WRITE                           (250)
+#define SDCARD_OVERTIME_ERASE                           (250)
 
 
 typedef struct
@@ -35,6 +39,7 @@ typedef struct
 
 extern      int                 Set_DSPI_Device(struct DSPI_Device_Data *dspi);
 extern      int                 Test_SDCard(void);
+extern      int                 Test_SDCard_Send_CMD0(uint32_t *rev);
 extern      int                 Test_SDCard_Send_Cmd(int cmd, uint32_t var, uint32_t *rev);
 extern      int                 Reset_SDCard(void);
 extern      int                 Test_SDCard_Read_Block(uint32_t sector, uint8_t btffer[]);
