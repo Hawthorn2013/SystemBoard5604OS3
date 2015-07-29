@@ -13,12 +13,11 @@ static      uint8_t                         Test_SD_Buff[4][SDCARD_SECTOR_SIZE];
 static      SDCard_Dev_Data                 SDCard_Dev_Data_1;
 
 
-static      int                             Test_SDCard_Send_CMD0(uint32_t *rev);
 static      int                             Test_SDCard_Send_Cmd(int cmd, uint32_t var, uint8_t crc, uint32_t *rev);
 static      int                             Rev_8_Bytes(uint8_t data[]);
 static      int                             Send_8_Bytes(uint8_t data[]);
 static      int                             Send_8_Clocks_withoout_CS(void);
-static      int                             Send_80_Clocks_withoout_CS(void);
+static      int                             Send_80_Clocks_without_CS(void);
 static      void                            Send_Byte(uint8_t data);
 static      uint8_t                         Rev_Byte(void);
 
@@ -89,25 +88,6 @@ int Test_SDCard(void)
 }
 
 
-static int Test_SDCard_Send_CMD0(uint32_t *rev)
-{
-    uint8_t send[8] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, };
-    uint8_t cmd0[6] = {0x40, 0x00, 0x00, 0x00, 0x00, 0x95, };
-    uint32_t res = 0x00000000;
-    
-    Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
-    DSPI_SYNC_Send_and_Receive_Data(SDCard_Dev_Data_1.DSPI_dev, cmd0, NULL, 6);
-    do
-    {
-        res = Rev_Byte();
-    }
-    while (0xFF == res);
-    *rev = (uint32_t)res;
-    Send_8_Clocks_withoout_CS();
-    return 0;
-}
-
-
 static int Test_SDCard_Send_Cmd(int cmd, uint32_t var, uint8_t crc, uint32_t *rev)
 {
     uint32_t sector = 0x00000000;
@@ -132,10 +112,10 @@ int Reset_SDCard(void)
 {
     uint32_t rev = 0x00000000;
     
-    Send_80_Clocks_withoout_CS();
+    Send_80_Clocks_without_CS();
     do
     {
-        Test_SDCard_Send_CMD0(&rev);
+        Test_SDCard_Send_Cmd(0, 0, 0x95, &rev);
     }
     while (0x01 != rev);
     do
@@ -331,7 +311,7 @@ static int Send_8_Clocks_withoout_CS(void)
 }
 
 
-static int Send_80_Clocks_withoout_CS(void)
+static int Send_80_Clocks_without_CS(void)
 {
     uint8_t send[8] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, };
     
