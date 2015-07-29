@@ -33,6 +33,7 @@
 typedef struct
 {
     struct DSPI_Device_Data *DSPI_dev;
+    uint8_t CSD[16];
 } SDCard_Dev_Data;
 
 
@@ -44,3 +45,4 @@ extern      int                 Test_SDCard_Read_Block(uint32_t sector, uint8_t 
 extern      int                 Test_SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt);
 extern      int                 Test_SDCard_Write_Block(uint32_t sector, uint8_t buffer[]);
 extern      int                 Test_SDCard_Write_Mult_Blocks(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt);
+extern      int                 Get_SDCard_Size(uint32_t *size);

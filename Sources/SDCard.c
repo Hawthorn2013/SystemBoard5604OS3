@@ -12,7 +12,6 @@
 static      uint8_t                         Test_SD_Buff[4][SDCARD_SECTOR_SIZE];
 static      SDCard_Dev_Data                 SDCard_Dev_Data_1;
 
-
 static      int                             Test_SDCard_Send_Cmd(int cmd, uint32_t var, uint8_t crc, uint32_t *rev);
 static      int                             Rev_8_Bytes(uint8_t data[]);
 static      int                             Send_8_Bytes(uint8_t data[]);
@@ -20,6 +19,7 @@ static      int                             Send_8_Clocks_withoout_CS(void);
 static      int                             Send_80_Clocks_without_CS(void);
 static      void                            Send_Byte(uint8_t data);
 static      uint8_t                         Rev_Byte(void);
+static      int                             Test_Get_CSD(void);
 
 
 int Set_DSPI_Device(struct DSPI_Device_Data *dspi)
@@ -32,29 +32,14 @@ int Set_DSPI_Device(struct DSPI_Device_Data *dspi)
 int Test_SDCard(void)
 {
     int rev = 0;
+    uint32_t size = 0;
     
     Set_DSPI_Device(&DSPI_1_Device_Data);
     Open_DSPI_Dev(SDCard_Dev_Data_1.DSPI_dev);
     Set_DSPI_CTAR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_CTAR_DBR, SDCARD_DSPI_CTAR_CPOL, SDCARD_DSPI_CTAR_CPHA, SDCARD_DSPI_CTAR_LSBFE, SDCARD_DSPI_CTAR_PCSSCK, SDCARD_DSPI_CTAR_PASC, SDCARD_DSPI_CTAR_PDT, SDCARD_DSPI_CTAR_PBR, SDCARD_DSPI_CTAR_CSSCK, SDCARD_DSPI_CTAR_ASC, SDCARD_DSPI_CTAR_DT, SDCARD_DSPI_CTAR_BR);
     Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     Reset_SDCard();
-//    do
-//    {
-//        rev = Test_SDCard_Read_Mult_Block(0, (uint8_t (*)[SDCARD_SECTOR_SIZE])(Test_SD_Buff[0]), 2);
-//    }
-//    while(rev);
-    
-//    do
-//    {
-//        rev = Test_SDCard_Write_Block(2, Test_SD_Buff[0]);
-//    }
-//    while(rev);
-//    
-//    do
-//    {
-//        rev = Test_SDCard_Write_Block(3, Test_SD_Buff[1]);
-//    }
-//    while(rev);
+    Get_SDCard_Size(&size);
     
     do
     {
@@ -125,6 +110,7 @@ int Reset_SDCard(void)
     while (0x00 != rev);
     Test_SDCard_Send_Cmd(59, 0, 0xFF, &rev);
     Test_SDCard_Send_Cmd(16, 512, 0xFF, &rev);
+    Test_Get_CSD();
     return 0;
 }
 
@@ -345,5 +331,43 @@ static uint8_t Rev_Byte(void)
 }
 
 
+static int Test_Get_CSD(void)
+{
+    uint32_t rev = 0;
+    
+    Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
+    Test_SDCard_Send_Cmd(9, 0x00000000, 0xFF, &rev);
+    if (0x00 != rev)
+    {
+        return (int)rev;
+    }
+    Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
+    while(1)
+    {
+        uint8_t res = 0x00;
+
+        res = Rev_Byte();
+        if (0xFE == res)
+        {
+            break;
+        }
+    }
+    Rev_8_Bytes(SDCard_Dev_Data_1.CSD);
+    Rev_8_Bytes(SDCard_Dev_Data_1.CSD + 8);
+    Rev_8_Bytes(NULL);
+    Rev_8_Bytes(NULL);
+    Send_8_Clocks_withoout_CS();
+    return 0;
+}
 
 
+int Get_SDCard_Size(uint32_t *size)
+{
+    uint32_t cnt = 0;
+    
+    cnt |= (uint32_t)(SDCard_Dev_Data_1.CSD[7])                 >> 6;
+    cnt |= (uint32_t)(SDCard_Dev_Data_1.CSD[8])                 << 2;
+    cnt |= (uint32_t)(SDCard_Dev_Data_1.CSD[9] & 0b00000011)    << 10;
+    *size = cnt;
+    return 0;
+}
