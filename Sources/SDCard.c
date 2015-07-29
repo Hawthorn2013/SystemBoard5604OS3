@@ -20,6 +20,8 @@ static      int                             Send_80_Clocks_without_CS(void);
 static      void                            Send_Byte(uint8_t data);
 static      uint8_t                         Rev_Byte(void);
 static      int                             Test_Get_CSD(void);
+static      int                             Test_SDCard_Send_Cmd_Ex(int cmd, uint32_t var, uint8_t crc, uint8_t *rev);
+static      uint8_t                         Cal_CRC7(uint8_t *data, int cnt);
 
 
 int Set_DSPI_Device(struct DSPI_Device_Data *dspi)
@@ -93,16 +95,53 @@ static int Test_SDCard_Send_Cmd(int cmd, uint32_t var, uint8_t crc, uint32_t *re
 }
 
 
+static int Test_SDCard_Send_Cmd_Ex(int cmd, uint32_t var, uint8_t crc, uint8_t *rev)
+{
+    uint8_t send[6], res = 0;
+    
+    send[0] = (uint8_t)(cmd | 0x40);
+    *(uint32_t *)&(send[1]) = var;
+    send[5] = crc;
+    Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
+    DSPI_SYNC_Send_and_Receive_Data(SDCard_Dev_Data_1.DSPI_dev, send, NULL, 6);
+    do
+    {
+        res = Rev_Byte();
+    }
+    while (0xFF == res);
+    *(rev++) = res;
+    switch (cmd)
+    {
+    case SDCARD_CMD8 :
+        *(rev++) = Rev_Byte();
+        *(rev++) = Rev_Byte();
+        *(rev++) = Rev_Byte();
+        *(rev++) = Rev_Byte();
+        break;
+    default :
+        break;
+    }
+    Send_8_Clocks_withoout_CS();
+}
+
+
 int Reset_SDCard(void)
 {
     uint32_t rev = 0x00000000;
+    R7 r7;
+    uint8_t crc = 0x00;
+    uint8_t data[5] = {0x40, 0x00, 0x00, 0x00, 0x00};
     
+    crc = Cal_CRC7(data, sizeof(data));
     Send_80_Clocks_without_CS();
     do
     {
         Test_SDCard_Send_Cmd(0, 0, 0x95, &rev);
     }
     while (0x01 != rev);
+    
+    Test_SDCard_Send_Cmd_Ex(SDCARD_CMD8, 0x000000AA, 0xFF, r7);
+    
     do
     {
         Test_SDCard_Send_Cmd(1, 0, 0xFF, &rev);
@@ -370,4 +409,27 @@ int Get_SDCard_Size(uint32_t *size)
     cnt |= (uint32_t)(SDCard_Dev_Data_1.CSD[9] & 0b00000011)    << 10;
     *size = cnt;
     return 0;
+}
+
+
+static uint8_t Cal_CRC7(uint8_t *data, int cnt)
+{
+    int i, a;
+    unsigned char crc = 0x00, Data;
+    
+    for (a=0; a < cnt; a++)
+    {
+        Data = data[a];
+        for (i = 0; i < 8; i++)
+        {
+            crc <<= 1;
+            if ((Data & 0x80) ^ (crc & 0x80))
+            {
+                crc ^= 0x09;
+            }
+            Data <<= 1;
+        }
+    }
+    crc = (crc << 1) | 1;
+    return crc;
 }

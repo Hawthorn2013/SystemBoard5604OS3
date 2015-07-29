@@ -28,7 +28,7 @@
 #define SDCARD_OVERTIME_READ                            (100)
 #define SDCARD_OVERTIME_WRITE                           (250)
 #define SDCARD_OVERTIME_ERASE                           (250)
-
+#define SDCARD_CMD8                                     (8)
 
 typedef struct
 {
@@ -36,6 +36,7 @@ typedef struct
     uint8_t CSD[16];
 } SDCard_Dev_Data;
 
+typedef uint8_t R7[5];
 
 
 extern      int                 Set_DSPI_Device(struct DSPI_Device_Data *dspi);
