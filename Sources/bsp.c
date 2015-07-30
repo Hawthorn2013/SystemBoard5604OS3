@@ -877,6 +877,7 @@ int DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t send_data
 {
     int quotient, remainder, i, rev_cnt = 0;
     
+    (void)rev_data;
     if (dev->dspi->SR.B.TXCTR)
     {
         return DSPI_ERR_DEVICE_BUSY;

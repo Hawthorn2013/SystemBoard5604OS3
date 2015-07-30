@@ -29,6 +29,74 @@
 #define SDCARD_OVERTIME_WRITE                           (250)
 #define SDCARD_OVERTIME_ERASE                           (250)
 #define SDCARD_CMD8                                     (8)
+#define SDCARD_CMD55                                    (55)
+#define SDCARD_CMD58                                    (58)
+#define SDCARD_ACMD41                                   (41)
+
+typedef union
+{
+    uint8_t R;
+    struct
+    {
+        uint8_t                 : 1;
+        uint8_t Parameter_Err   : 1;
+        uint8_t Address_Error   : 1;
+        uint8_t Erase_Seq_Error : 1;
+        uint8_t Com_CRC_Error   : 1;
+        uint8_t Illegal_Command : 1;
+        uint8_t Erase_Reset     : 1;
+        uint8_t In_Idle_State   : 1;
+    } B;
+} R1;
+
+typedef union
+{
+    uint8_t R[2];
+    struct
+    {
+        R1 R1;
+        uint8_t Out_of_Range_CSD_Overwrite              : 1;
+        uint8_t Erase_Param                             : 1;
+        uint8_t WP_Violation                            : 1;
+        uint8_t Card_ECC_Failed                         : 1;
+        uint8_t CC_Error                                : 1;
+        uint8_t Error                                   : 1;
+        uint8_t WP_Erase_Skip_Lock_Unlock_Cmd_Failed    : 1;
+        uint8_t Card_is_Locked                          : 1;
+    } B;
+} R2;
+
+typedef union
+{
+    uint8_t R[4];
+    struct
+    {
+        uint8_t Card_power_up_status_bit    : 1;
+        uint8_t CCS                         : 1;
+        uint8_t                             : 6;
+        uint8_t V3P5_3P6                    : 1;
+        uint8_t V3P4_3P5                    : 1;
+        uint8_t V3P3_3P4                    : 1;
+        uint8_t V3P2_3P3                    : 1;
+        uint8_t V3P1_3P2                    : 1;
+        uint8_t V3P0_3P1                    : 1;
+        uint8_t V2P9_3P0                    : 1;
+        uint8_t V2P8_2P9                    : 1;
+        uint8_t V2P7_2P8                    : 1;
+        uint8_t                             : 7;
+        uint8_t                             : 8;
+    } B;
+} OCR;
+
+typedef union
+{
+    uint8_t R[5];
+    struct
+    {
+        R1 R1;
+        OCR OCR;
+    } B;
+} R3;
 
 typedef struct
 {
@@ -36,7 +104,20 @@ typedef struct
     uint8_t CSD[16];
 } SDCard_Dev_Data;
 
-typedef uint8_t R7[5];
+typedef union
+{
+    uint8_t R[5];
+    struct
+    {
+        R1 R1;
+        uint8_t command_version     : 4;
+        uint8_t                     : 4;
+        uint8_t                     : 8;
+        uint8_t                     : 4;
+        uint8_t voltage_accepted    : 4;
+        uint8_t check_pattern       : 8;
+    } B;
+} R7;
 
 
 extern      int                 Set_DSPI_Device(struct DSPI_Device_Data *dspi);
