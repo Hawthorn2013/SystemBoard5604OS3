@@ -42,6 +42,10 @@
 #define SDCARD_CMD59                                    (59)
 #define SDCARD_CMD58                                    (58)
 #define SDCARD_ACMD41                                   (41)
+#define SDCARD_VERSION_1                                (10)
+#define SDCARD_VERSION_2_STANDARD_CAPACITY              (21)
+#define SDCARD_VERSION_2_HIGH_CAPACITY                  (22)
+#define SDCARD_VERSION_UNUSABLE                         (0)
 
 typedef union
 {
@@ -112,6 +116,7 @@ typedef struct
 {
     struct DSPI_Device_Data *DSPI_dev;
     uint8_t CSD[16];
+    int version;
 } SDCard_Dev_Data;
 
 typedef union

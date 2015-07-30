@@ -6,6 +6,7 @@
  */
 
 
+#define         __SDCARD_C_
 #include        "includes.h"
 
 
@@ -112,19 +113,100 @@ int Reset_SDCard(void)
         Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD0, 0, 0x95, r1.R, sizeof(r1));
     }
     while (0x01 != r1.R[0]);
-    
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD8, 0x000001AA, 0xFF, r7.R, sizeof(r7));
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD58, 0x00000000, 0xFF, r3.R, sizeof(r3));
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD55, 0x00000000, 0xFF, r1.R, sizeof(r1));
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_ACMD41, 0x40000000, 0xFF, r1.R, sizeof(r1));
-    
-    do
+
+    while(1)
     {
-        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD1, 0, 0xFF, r1.R, sizeof(r1));
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD8, 0x000001AA, 0xFF, r7.R, sizeof(r7));
+        if (1 == r7.B.R1.B.Illegal_Command)
+        {
+            SDCard_Dev_Data_1.version = SDCARD_VERSION_1;
+            break;
+        }
+        if (0xAA != r7.B.check_pattern)
+        {
+            continue;
+        }
+        if (0b0001 != r7.B.voltage_accepted)
+        {
+            SDCard_Dev_Data_1.version = SDCARD_VERSION_UNUSABLE;
+            return 1;
+        }
+        else
+        {
+            break;
+        }
     }
-    while (0x00 != r1.R[0]);
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD59, 0, 0xFF, r1.R, sizeof(r1));
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD16, 512, 0xFF, r1.R, sizeof(r1));
+    while(1)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD58, 0x00000000, 0xFF, r3.R, sizeof(r3));
+        if (0x01 != r3.B.R1.R[0])
+        {
+            continue;
+        }
+        if ((!r3.B.OCR.B.V3P2_3P3) || (!r3.B.OCR.B.V3P3_3P4))
+        {
+            SDCard_Dev_Data_1.version = SDCARD_VERSION_UNUSABLE;
+            return 2;
+        }
+        else
+        {
+            break;
+        }
+    }
+    
+    while(1)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD55, 0x00000000, 0xFF, r1.R, sizeof(r1));
+        if (0x01 != r1.R[0])
+        {
+            continue;
+        }
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_ACMD41, 0x40000000, 0xFF, r1.R, sizeof(r1));
+        if (0x00 == r1.R[0])
+        {
+            break;
+        }
+    }
+    
+    while(1)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD58, 0x00000000, 0xFF, r3.R, sizeof(r3));
+        if (0x00 != r3.B.R1.R[0])
+        {
+            continue;
+        }
+        if (!r3.B.OCR.B.Card_power_up_status_bit)
+        {
+            SDCard_Dev_Data_1.version = SDCARD_VERSION_UNUSABLE;
+            return 3;
+        }
+        if (r3.B.OCR.B.CCS)
+        {
+            SDCard_Dev_Data_1.version = SDCARD_VERSION_2_HIGH_CAPACITY;
+            break;
+        }
+        else
+        {
+            SDCard_Dev_Data_1.version = SDCARD_VERSION_2_STANDARD_CAPACITY;
+            break;
+        }
+    }
+    while(1)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD59, 0, 0xFF, r1.R, sizeof(r1));
+        if (0x00 == r1.R[0])
+        {
+            break;
+        }
+    }
+    while(1)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD16, 512, 0xFF, r1.R, sizeof(r1));
+        if (0x00 == r1.R[0])
+        {
+            break;
+        }
+    }
     Test_Get_CSD();
     return 0;
 }
