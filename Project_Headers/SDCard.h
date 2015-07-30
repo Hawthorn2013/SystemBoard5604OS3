@@ -28,14 +28,17 @@
 #define SDCARD_OVERTIME_READ                            (100)
 #define SDCARD_OVERTIME_WRITE                           (250)
 #define SDCARD_OVERTIME_ERASE                           (250)
+#define SDCARD_CMD1                                     (1)
 #define SDCARD_CMD8                                     (8)
+#define SDCARD_CMD16                                    (16)
 #define SDCARD_CMD55                                    (55)
+#define SDCARD_CMD59                                    (59)
 #define SDCARD_CMD58                                    (58)
 #define SDCARD_ACMD41                                   (41)
 
 typedef union
 {
-    uint8_t R;
+    uint8_t R[1];
     struct
     {
         uint8_t                 : 1;
