@@ -104,6 +104,88 @@ typedef union
 
 typedef union
 {
+    uint8_t R[16];
+    union
+    {
+        struct
+        {
+            uint32_t CSD_STRUCTURE          : 2;
+            uint32_t                        : 6;
+            uint32_t TAAC                   : 8;
+            uint32_t NSAC                   : 8;
+            uint32_t TRAN_SPEED             : 8;
+            uint32_t CCC                    : 12;
+            uint32_t READ_BL_LEN            : 4;
+            uint32_t READ_BL_PARTIAL        : 1;
+            uint32_t WRITE_BLK_MISALIGN     : 1;
+            uint32_t READ_BLK_MISALIGN      : 1;
+            uint32_t DSR_IMP                : 1;
+            uint32_t                        : 2;
+            uint32_t C_SIZE_H               : 10;
+            uint32_t C_SIZE_L               : 2;
+            uint32_t VDD_R_CURR_MIN         : 3;
+            uint32_t VDD_R_CURR_MAX         : 3;
+            uint32_t VDD_W_CURR_MIN         : 3;
+            uint32_t VDD_W_CURR_MAX         : 3;
+            uint32_t C_SIZE_MULT            : 3;
+            uint32_t ERASE_BLK_EN           : 1;
+            uint32_t SECTOR_SIZE            : 7;
+            uint32_t WP_GRP_SIZE            : 7;
+            uint32_t WP_GRP_ENABLE          : 1;
+            uint32_t                        : 2;
+            uint32_t R2W_FACTOR             : 3;
+            uint32_t WRITE_BL_LEN           : 4;
+            uint32_t WRITE_BL_PARTIAL       : 1;
+            uint32_t                        : 5;
+            uint32_t FILE_FORMAT_GRP        : 1;
+            uint32_t COPY                   : 1;
+            uint32_t PERM_WRITE_PROTECT     : 1;
+            uint32_t TMP_WRITE_PROTECT      : 1;
+            uint32_t FILE_FORMAT            : 2;
+            uint32_t                        : 2;
+            uint32_t CRC                    : 7;
+            uint32_t                        : 1;
+        } CSD_V1_0;
+        struct
+        {
+            uint32_t CSD_STRUCTURE          : 2;
+            uint32_t                        : 6;
+            uint32_t TAAC                   : 8;
+            uint32_t NSAC                   : 8;
+            uint32_t TRAN_SPEED             : 8;
+            uint32_t CCC                    : 12;
+            uint32_t READ_BL_LEN            : 4;
+            uint32_t READ_BL_PARTIAL        : 1;
+            uint32_t WRITE_BLK_MISALIGN     : 1;
+            uint32_t READ_BLK_MISALIGN      : 1;
+            uint32_t DSR_IMP                : 1;
+            uint32_t                        : 6;
+            uint32_t C_SIZE_H               : 6;
+            uint32_t C_SIZE_L               : 16;
+            uint32_t                        : 1;
+            uint32_t ERASE_BLK_EN           : 1;
+            uint32_t SECTOR_SIZE            : 7;
+            uint32_t WP_GRP_SIZE            : 7;
+            uint32_t WP_GRP_ENABLE          : 1;
+            uint32_t                        : 2;
+            uint32_t R2W_FACTOR             : 3;
+            uint32_t WRITE_BL_LEN           : 4;
+            uint32_t WRITE_BL_PARTIAL       : 1;
+            uint32_t                        : 5;
+            uint32_t FILE_FORMAT_GRP        : 1;
+            uint32_t COPY                   : 1;
+            uint32_t PERM_WRITE_PROTECT     : 1;
+            uint32_t TMP_WRITE_PROTECT      : 1;
+            uint32_t FILE_FORMAT            : 2;
+            uint32_t                        : 2;
+            uint32_t CRC                    : 7;
+            uint32_t                        : 1;
+        } CSD_V2_0;
+    } B;
+} CSD;
+
+typedef union
+{
     uint8_t R[5];
     struct
     {
@@ -115,8 +197,9 @@ typedef union
 typedef struct
 {
     struct DSPI_Device_Data *DSPI_dev;
-    uint8_t CSD[16];
     int version;
+    uint32_t sector_amount;
+    CSD CSD;
 } SDCard_Dev_Data;
 
 typedef union
@@ -142,4 +225,3 @@ extern      int                 Test_SDCard_Read_Block(uint32_t sector, uint8_t 
 extern      int                 Test_SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt);
 extern      int                 Test_SDCard_Write_Block(uint32_t sector, uint8_t buffer[]);
 extern      int                 Test_SDCard_Write_Mult_Blocks(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt);
-extern      int                 Get_SDCard_Size(uint32_t *size);

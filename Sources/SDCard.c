@@ -22,6 +22,7 @@ static      uint8_t                         Rev_Byte(void);
 static      int                             Test_Get_CSD(void);
 static      int                             Test_SDCard_Send_Cmd_Ex2(int cmd, uint32_t var, uint8_t crc, uint8_t *rev, int len);
 static      uint8_t                         Cal_CRC7(uint8_t *data, int cnt);
+static      int                             Get_SDCard_Size(void);
 
 
 int Set_DSPI_Device(struct DSPI_Device_Data *dspi)
@@ -41,7 +42,8 @@ int Test_SDCard(void)
     Set_DSPI_CTAR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_CTAR_DBR, SDCARD_DSPI_CTAR_CPOL, SDCARD_DSPI_CTAR_CPHA, SDCARD_DSPI_CTAR_LSBFE, SDCARD_DSPI_CTAR_PCSSCK, SDCARD_DSPI_CTAR_PASC, SDCARD_DSPI_CTAR_PDT, SDCARD_DSPI_CTAR_PBR, SDCARD_DSPI_CTAR_CSSCK, SDCARD_DSPI_CTAR_ASC, SDCARD_DSPI_CTAR_DT, SDCARD_DSPI_CTAR_BR);
     Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     Reset_SDCard();
-    Get_SDCard_Size(&size);
+    Test_Get_CSD();
+    Get_SDCard_Size();
     
     do
     {
@@ -207,7 +209,6 @@ int Reset_SDCard(void)
             break;
         }
     }
-    Test_Get_CSD();
     return 0;
 }
 
@@ -218,7 +219,18 @@ int Test_SDCard_Read_Block(uint32_t sector, uint8_t buffer[])
     int i = 0;
     uint8_t send[8] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
     
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD17, sector<<9, 0xFF, r1.R, sizeof(r1));
+    if (SDCARD_VERSION_2_STANDARD_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD17, sector<<9, 0xFF, r1.R, sizeof(r1));
+    }
+    else if (SDCARD_VERSION_2_HIGH_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD17, sector, 0xFF, r1.R, sizeof(r1));
+    }
+    else
+    {
+        return 1;
+    }
     if (0x00 != r1.R[0])
     {
         return (int)r1.R[0];
@@ -250,7 +262,18 @@ int Test_SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_
     int i = 0, j = 0;
     uint8_t send[8] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
     
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD18, sector<<9, 0xFF, r1.R, sizeof(r1));
+    if (SDCARD_VERSION_2_STANDARD_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD18, sector<<9, 0xFF, r1.R, sizeof(r1));
+    }
+    else if(SDCARD_VERSION_2_HIGH_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD18, sector, 0xFF, r1.R, sizeof(r1));
+    }
+    else
+    {
+        return 1;
+    }
     if (0x00 != r1.R[0])
     {
         return (int)r1.R[0];
@@ -289,7 +312,18 @@ int Test_SDCard_Write_Block(uint32_t sector, uint8_t buffer[])
     uint8_t send[9] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE, };
     uint8_t res = 0x00;
     
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD24, sector<<9, 0xFF, r1.R, sizeof(r1));
+    if (SDCARD_VERSION_2_STANDARD_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD24, sector<<9, 0xFF, r1.R, sizeof(r1));
+    }
+    else if (SDCARD_VERSION_2_HIGH_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD24, sector, 0xFF, r1.R, sizeof(r1));
+    }
+    else
+    {
+        return 1;
+    }
     if (0x00 != r1.R[0])
     {
         return (int)r1.R[0];
@@ -328,7 +362,18 @@ int Test_SDCard_Write_Mult_Blocks(uint32_t sector, uint8_t buffer[][SDCARD_SECTO
     uint8_t send[10] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFC, 0xFD};
     uint8_t res = 0x00;
     
-    Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD25, sector<<9, 0xFF, r1.R, sizeof(r1));
+    if (SDCARD_VERSION_2_STANDARD_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD25, sector<<9, 0xFF, r1.R, sizeof(r1));
+    }
+    else if (SDCARD_VERSION_2_HIGH_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD25, sector, 0xFF, r1.R, sizeof(r1));
+    }
+    else
+    {
+        return 1;
+    }
     if (0x00 != r1.R[0])
     {
         return (int)r1.R[0];
@@ -449,8 +494,8 @@ static int Test_Get_CSD(void)
             break;
         }
     }
-    Rev_8_Bytes(SDCard_Dev_Data_1.CSD);
-    Rev_8_Bytes(SDCard_Dev_Data_1.CSD + 8);
+    Rev_8_Bytes(SDCard_Dev_Data_1.CSD.R);
+    Rev_8_Bytes(SDCard_Dev_Data_1.CSD.R + 8);
     Rev_8_Bytes(NULL);
     Rev_8_Bytes(NULL);
     Send_8_Clocks_withoout_CS();
@@ -458,14 +503,29 @@ static int Test_Get_CSD(void)
 }
 
 
-int Get_SDCard_Size(uint32_t *size)
+static int Get_SDCard_Size(void)
 {
-    uint32_t cnt = 0;
     
-    cnt |= (uint32_t)(SDCard_Dev_Data_1.CSD[7])                 >> 6;
-    cnt |= (uint32_t)(SDCard_Dev_Data_1.CSD[8])                 << 2;
-    cnt |= (uint32_t)(SDCard_Dev_Data_1.CSD[9] & 0b00000011)    << 10;
-    *size = cnt;
+    if (SDCARD_VERSION_2_STANDARD_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        uint32_t block_len = 1024;
+        uint32_t c_size_mult = SDCard_Dev_Data_1.CSD.B.CSD_V1_0.C_SIZE_MULT;
+        uint32_t c_size = 0x00000000;
+        c_size |= (uint32_t)(SDCard_Dev_Data_1.CSD.B.CSD_V1_0.C_SIZE_H) << 2;
+        c_size |= (uint32_t)(SDCard_Dev_Data_1.CSD.B.CSD_V1_0.C_SIZE_L);
+        SDCard_Dev_Data_1.sector_amount = (c_size + 1) * ((uint32_t)0x00000001 << (c_size_mult + 2)) * (block_len / 512);
+    }
+    else if (SDCARD_VERSION_2_HIGH_CAPACITY == SDCard_Dev_Data_1.version)
+    {
+        uint32_t c_size = 0x00000000;
+        c_size |= (uint32_t)(SDCard_Dev_Data_1.CSD.B.CSD_V2_0.C_SIZE_H) << 16;
+        c_size |= (uint32_t)(SDCard_Dev_Data_1.CSD.B.CSD_V2_0.C_SIZE_L);
+        SDCard_Dev_Data_1.sector_amount = c_size;
+    }
+    else
+    {
+        return 1;
+    }
     return 0;
 }
 
