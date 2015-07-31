@@ -104,7 +104,7 @@ int Reset_SDCard(void)
     R1 r1;
     R3 r3;
     uint8_t crc = 0x00;
-    uint8_t data[5] = {0x40, 0x00, 0x00, 0x00, 0x00};
+    uint8_t data[5] = {0x48, 0x00, 0x00, 0x01, 0xAA};
     
     crc = Cal_CRC7(data, sizeof(data));
     Send_80_Clocks_without_CS();
@@ -116,7 +116,7 @@ int Reset_SDCard(void)
 
     while(1)
     {
-        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD8, 0x000001AA, 0xFF, r7.R, sizeof(r7));
+        Test_SDCard_Send_Cmd_Ex2(SDCARD_CMD8, 0x000001AA, crc, r7.R, sizeof(r7));
         if (1 == r7.B.R1.B.Illegal_Command)
         {
             SDCard_Dev_Data_1.version = SDCARD_VERSION_1;
