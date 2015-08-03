@@ -25,3 +25,4 @@
 #include      "oled.h"
 #include        "SDCard.h"
 #include	  "TestTask.h"
+#include	  "diskio.h"
