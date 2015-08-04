@@ -41,7 +41,7 @@ static      int                 Enable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag
 static      int                 Disable_INTC_DSPI_SR_TCF(volatile struct DSPI_tag *dspi);
 static      int                 Enable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi);
 static      int                 Disable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi);
-static      int                 DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt);
+static      int                 DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, const uint8_t send_data[], uint8_t rev_data[], int cnt);
 
 
 /*
@@ -809,7 +809,7 @@ int Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs)
 }
 
 
-int DSPI_SYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt)
+int DSPI_SYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, const uint8_t send_data[], uint8_t rev_data[], int cnt)
 {
     int res = DSPI_ERR_NONE;
     uint8_t popr[DSPI_ASYNC_SEND_DATA_MAX_LENGTH];
@@ -873,7 +873,7 @@ int DSPI_ASYNC_Send_and_Receive_Data(struct DSPI_Device_Data *dev, uint8_t send_
 }
 
 
-int DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t send_data[], uint8_t rev_data[], int cnt)
+int DSPI_Push_Data_to_Empty_FIFO(struct DSPI_Device_Data *dev, uint8_t const send_data[], uint8_t rev_data[], int cnt)
 {
     int quotient, remainder, i, rev_cnt = 0;
     

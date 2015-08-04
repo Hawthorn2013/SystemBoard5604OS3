@@ -33,24 +33,24 @@ DSTATUS disk_status (
 
 	switch (pdrv) {
 	case ATA :
-//		result = ATA_disk_status();
-
-		// translate the reslut code here
-
+	    stat = STA_NOINIT;
 		return stat;
 
 	case MMC :
-//		result = MMC_disk_status();
-
-		// translate the reslut code here
+	    result = Get_SDCard_Status();
+	    if (SDCARD_STATUS_READY == result)
+	    {
+	        stat = RES_OK;
+	    }
+	    else
+	    {
+	        stat = STA_NOINIT;
+	    }
 
 		return stat;
 
 	case USB :
-//		result = USB_disk_status();
-
-		// translate the reslut code here
-
+	    stat = STA_NOINIT;
 		return stat;
 	}
 	return STA_NOINIT;
@@ -71,24 +71,23 @@ DSTATUS disk_initialize (
 
 	switch (pdrv) {
 	case ATA :
-//		result = ATA_disk_initialize();
-
-		// translate the reslut code here
-
+	    stat = STA_NOINIT;
 		return stat;
 
 	case MMC :
-//		result = MMC_disk_initialize();
-
-		// translate the reslut code here
-
+	    result = Init_SDCard();
+	    if (SDCARD_STATUS_READY == result)
+	    {
+	        stat = RES_OK;
+	    }
+	    else
+	    {
+	        stat = STA_NOINIT;
+	    }
 		return stat;
 
 	case USB :
-//		result = USB_disk_initialize();
-
-		// translate the reslut code here
-
+	    stat = STA_NOINIT;
 		return stat;
 	}
 	return STA_NOINIT;
@@ -114,7 +113,7 @@ DRESULT disk_read (
 	case ATA :
 		// translate the arguments here
 
-//		result = ATA_disk_read(buff, sector, count);
+	    res = RES_PARERR;
 
 		// translate the reslut code here
 
@@ -123,7 +122,26 @@ DRESULT disk_read (
 	case MMC :
 		// translate the arguments here
 
-//		result = MMC_disk_read(buff, sector, count);
+	    if (count > 1 && count <= INT_MAX)
+	    {
+	        result = SDCard_Read_Mult_Block(sector, (uint8_t (*)[SDCARD_SECTOR_SIZE])buff, (int)count);
+	        if (SDCARD_RES_OK == result)
+	        {
+	            res = RES_OK;
+	        }
+	    }
+	    else if (1 == count)
+	    {
+	        result = SDCard_Read_Single_Block(sector, buff);
+            if (SDCARD_RES_OK == result)
+            {
+                res = RES_OK;
+            }
+	    }
+	    else
+	    {
+	        res = RES_PARERR;
+	    }
 
 		// translate the reslut code here
 
@@ -132,7 +150,7 @@ DRESULT disk_read (
 	case USB :
 		// translate the arguments here
 
-//		result = USB_disk_read(buff, sector, count);
+	    res = RES_PARERR;
 
 		// translate the reslut code here
 
@@ -163,7 +181,7 @@ DRESULT disk_write (
 	case ATA :
 		// translate the arguments here
 
-//		result = ATA_disk_write(buff, sector, count);
+	    res = RES_PARERR;
 
 		// translate the reslut code here
 
@@ -172,7 +190,26 @@ DRESULT disk_write (
 	case MMC :
 		// translate the arguments here
 
-//		result = MMC_disk_write(buff, sector, count);
+	    if (count > 1 && count <= INT_MAX)
+        {
+            result = SDCard_Write_Mult_Blocks(sector, (uint8_t (*)[SDCARD_SECTOR_SIZE])buff, (int)count);
+            if (SDCARD_RES_OK == result)
+            {
+                res = RES_OK;
+            }
+        }
+        else if (1 == count)
+        {
+            result = SDCard_Write_Single_Block(sector, buff);
+            if (SDCARD_RES_OK == result)
+            {
+                res = RES_OK;
+            }
+        }
+        else
+        {
+            res = RES_PARERR;
+        }
 
 		// translate the reslut code here
 
@@ -181,7 +218,7 @@ DRESULT disk_write (
 	case USB :
 		// translate the arguments here
 
-//		result = USB_disk_write(buff, sector, count);
+	    res = RES_PARERR;
 
 		// translate the reslut code here
 
@@ -209,21 +246,70 @@ DRESULT disk_ioctl (
 
 	switch (pdrv) {
 	case ATA :
-
-		// Process of the command for the ATA drive
-
+	    res = RES_PARERR;
 		return res;
 
 	case MMC :
 
 		// Process of the command for the MMC/SD card
-
+	    if (CTRL_SYNC == cmd)
+	    {
+	        res = RES_PARERR;
+	    }
+	    else if (GET_SECTOR_COUNT == cmd)
+	    {
+	        uint32_t cnt = 0;
+	        result = Get_SDCard_Sector_Count(&cnt);
+	        if (SDCARD_RES_OK == result)
+	        {
+	            *(uint32_t *)buff = cnt;
+	            res = RES_OK;
+	        }
+	        else
+	        {
+	            res = RES_ERROR;
+	        }
+	    }
+        else if (GET_SECTOR_SIZE == cmd)
+        {
+            uint16_t size = 0;
+            result = Get_SDCard_Sector_Size(&size);
+            if (SDCARD_RES_OK == result)
+            {
+                if (    512 == size
+                    || 1024 == size
+                    || 2048 == size
+                    || 4096 == size )
+                {
+                    *(uint16_t *)buff = size;
+                    res = RES_OK;
+                }
+                else
+                {
+                    res = RES_ERROR;
+                }
+            }
+            else
+            {
+                res = RES_ERROR;
+            }
+        }
+        else if (GET_BLOCK_SIZE == cmd)
+        {
+            res = RES_PARERR;
+        }
+        else if (CTRL_TRIM == cmd)
+        {
+            res = RES_PARERR;
+        }
+        else
+        {
+            res = RES_PARERR;
+        }
 		return res;
 
 	case USB :
-
-		// Process of the command the USB drive
-
+	    res = RES_PARERR;
 		return res;
 	}
 
