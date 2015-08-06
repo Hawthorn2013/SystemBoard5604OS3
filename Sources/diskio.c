@@ -15,8 +15,8 @@
 
 
 /* Definitions of physical drive number for each drive */
-#define ATA		0	/* Example: Map ATA harddisk to physical drive 0 */
-#define MMC		1	/* Example: Map MMC/SD card to physical drive 1 */
+#define ATA		1	/* Example: Map ATA harddisk to physical drive 0 */
+#define MMC		0	/* Example: Map MMC/SD card to physical drive 1 */
 #define USB		2	/* Example: Map USB MSD to physical drive 2 */
 
 

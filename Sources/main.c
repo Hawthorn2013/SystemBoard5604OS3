@@ -1,7 +1,8 @@
 #include "includes.h"
 
 
-
+FATFS fatfs_1;
+const TCHAR mmc[] = "0:";
 
  int main(void) {
 	volatile int i = 0;
@@ -15,7 +16,8 @@
     Init_Key(PCR_BSP_S4, EMIOS_0_UC_BSP_S4, IRQ_BSP_S3_S4, INTC_Handler_BSP_S3_S4);
     Init_UART_0_Ex();
     Init_DSPI_1();
-    Init_SDCard();
+    f_mount(&fatfs_1, mmc, 1);
+    while(1) {}
     Enable_IRQ();
     Test_OLED_Init();
     OSInit();
