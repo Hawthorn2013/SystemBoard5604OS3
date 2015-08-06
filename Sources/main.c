@@ -1,8 +1,14 @@
 #include "includes.h"
 
 
+
 FATFS fatfs_1;
 const TCHAR mmc[] = "0:";
+FIL fil_1;
+const TCHAR path[] = "IAMCP.txt";
+const TCHAR test_line[] = "Hi! I am CP!";
+UINT bw;
+FRESULT fr1;
 
  int main(void) {
 	volatile int i = 0;
@@ -16,8 +22,15 @@ const TCHAR mmc[] = "0:";
     Init_Key(PCR_BSP_S4, EMIOS_0_UC_BSP_S4, IRQ_BSP_S3_S4, INTC_Handler_BSP_S3_S4);
     Init_UART_0_Ex();
     Init_DSPI_1();
-    f_mount(&fatfs_1, mmc, 1);
+        
+    fr1 = f_mount(&fatfs_1, mmc, 1);
+    fr1 = f_open(&fil_1, path, FA_OPEN_ALWAYS);
+    fr1 = f_close(&fil_1);
+    fr1 = f_open(&fil_1, path, FA_WRITE);
+    fr1 = f_write(&fil_1, test_line, sizeof(test_line)-1, &bw);
+    fr1 = f_close(&fil_1);
     while(1) {}
+        
     Enable_IRQ();
     Test_OLED_Init();
     OSInit();
