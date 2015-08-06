@@ -17,6 +17,7 @@
 #define NULL ((void *)0)
 
 #include        <limits.h>
+#include        <stdio.h>
 #include        "MPC5604B.h"
 #include        "IntcInterrupts.h"
 #include        "cpu.h"
