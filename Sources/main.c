@@ -24,11 +24,7 @@ FRESULT fr1;
     Init_DSPI_1();
         
     fr1 = f_mount(&fatfs_1, mmc, 1);
-    fr1 = f_open(&fil_1, path2, FA_OPEN_ALWAYS);
-    fr1 = f_close(&fil_1);
-    fr1 = f_open(&fil_2, path2, FA_WRITE);
-    fr1 = f_write(&fil_2, test_line, sizeof(test_line)-1, &bw);
-    fr1 = f_close(&fil_2);
+    Load_Font_File();
     while(1) {}
         
     Enable_IRQ();

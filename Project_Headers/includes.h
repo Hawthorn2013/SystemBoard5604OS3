@@ -18,6 +18,7 @@
 
 #include        <limits.h>
 #include        <stdio.h>
+#include        <string.h>
 #include        "MPC5604B.h"
 #include        "IntcInterrupts.h"
 #include        "cpu.h"
@@ -29,3 +30,4 @@
 #include	    "TestTask.h"
 #include	    "diskio.h"
 #include        "ff.h"
+#include        "font.h"
