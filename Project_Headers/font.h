@@ -10,7 +10,7 @@
 
 #define FONT_HEIGHT             (16)
 #define FONT_WIDTH              (16)
-
+#define FONT_DATA_BUFF_LENGTH   (16)
 
 typedef enum
 {

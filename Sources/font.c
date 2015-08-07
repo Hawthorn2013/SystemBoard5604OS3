@@ -11,6 +11,7 @@
 
 
 const static TCHAR Font_File_Path[] = L"方正像素16_U16.bin";
+static uint8_t Font_Data[FONT_DATA_BUFF_LENGTH][FONT_HEIGHT * FONT_WIDTH / 8];
 
 
 typedef struct
@@ -33,9 +34,13 @@ typedef struct
 
 typedef struct
 {
-    uint32_t OffAddr : 26;
     uint32_t Width : 6;
+    uint32_t OffAddr : 26;
 } tagUflCharInfo;
+
+
+static uint32_t __bswap_32(uint32_t x);
+static uint16_t __bswap_16(uint16_t x);
 
 
 int Load_Font_File(void)
@@ -45,8 +50,11 @@ int Load_Font_File(void)
     FRESULT fr1;
     tagFontLibHeader tagFontLibHeader1;
     tagFlSectionInfo tagFlSectionInfo1;
+    tagUflCharInfo tagUflCharInfo1;
     const char font_mark[] = "UFL";
-    const TCHAR load_list[] = L"陈鹏智能车十一";
+    const TCHAR load_list[] = L"估E一陈鹏智能车十";
+    uint32_t tmp = 0x00000000;
+    int i;
     
     fr1 = f_open(&fil1, Font_File_Path, FA_READ);
     if (FR_OK != fr1)
@@ -54,6 +62,7 @@ int Load_Font_File(void)
         return FONT_RES_ERR_READ_FILE;
     }
     
+    /* 加载文件头 */
     fr1 = f_read(&fil1, &tagFontLibHeader1, sizeof(tagFontLibHeader1), &br1);
     if (FR_OK != fr1)
     {
@@ -81,7 +90,8 @@ int Load_Font_File(void)
         return FONT_RES_ERR_READ_FILE;
     }
     
-    fr1 = f_lseek(&fil1, sizeof(tagFlSectionInfo1));
+    /* 加载段信息 */
+    fr1 = f_lseek(&fil1, sizeof(tagFontLibHeader1));
     if (FR_OK != fr1)
     {
         f_close(&fil1);
@@ -93,11 +103,67 @@ int Load_Font_File(void)
         f_close(&fil1);
         return FONT_RES_ERR_READ_FILE;
     }
+    tagFlSectionInfo1.First     = __bswap_16(tagFlSectionInfo1.First);
+    tagFlSectionInfo1.Last      = __bswap_16(tagFlSectionInfo1.Last);
+    tagFlSectionInfo1.OffAddr   = __bswap_32(tagFlSectionInfo1.OffAddr);
+    
+    /* 加载检索表 */
+    for (i = 0; i < FONT_DATA_BUFF_LENGTH; i++)
+    {
+        if (load_list[i] > tagFlSectionInfo1.Last || load_list[i] < tagFlSectionInfo1.First)
+        {
+            f_close(&fil1);
+            return FONT_RES_ERR_READ_FILE;
+        }
+        tmp = tagFlSectionInfo1.OffAddr + (load_list[i] - tagFlSectionInfo1.First) * sizeof(tagUflCharInfo);
+        fr1 = f_lseek(&fil1, tmp);
+        if (FR_OK != fr1)
+        {
+            f_close(&fil1);
+            return FONT_RES_ERR_READ_FILE;
+        }
+        fr1 = f_read(&fil1, &tagUflCharInfo1, sizeof(tagUflCharInfo1), &br1);
+        if (FR_OK != fr1)
+        {
+            f_close(&fil1);
+            return FONT_RES_ERR_READ_FILE;
+        }
+        *(uint32_t *)&tagUflCharInfo1 = __bswap_32(*(uint32_t *)&tagUflCharInfo1);
+        
+        /* 加载点阵 */
+        fr1 = f_lseek(&fil1, tagUflCharInfo1.OffAddr);
+        if (FR_OK != fr1)
+        {
+            f_close(&fil1);
+            return FONT_RES_ERR_READ_FILE;
+        }
+        fr1 = f_read(&fil1, (void *)Font_Data[i], sizeof(Font_Data[i]), &br1);
+        if (FR_OK != fr1)
+        {
+            f_close(&fil1);
+            return FONT_RES_ERR_READ_FILE;
+        }
+    }
+}
 
-//    fr1 = f_mount(&fatfs_1, mmc, 1);
-//    fr1 = f_open(&fil_1, path2, FA_OPEN_ALWAYS);
-//    fr1 = f_close(&fil_1);
-//    fr1 = f_open(&fil_2, path2, FA_WRITE);
-//    fr1 = f_write(&fil_2, test_line, sizeof(test_line)-1, &bw);
-//    fr1 = f_close(&fil_2);
+
+static uint32_t __bswap_32(uint32_t x)
+{
+    uint32_t tmp = 0x00000000;
+    
+    tmp |= (x >> 24) & 0x000000FF;
+    tmp |= (x >> 8 ) & 0x0000FF00;
+    tmp |= (x << 8 ) & 0x00FF0000;
+    tmp |= (x << 24) & 0xFF000000;
+    return tmp;
+}
+
+
+static uint16_t __bswap_16(uint16_t x)
+{
+    uint16_t tmp = 0x0000;
+    
+    tmp |= (x >> 8) & 0x00FF;
+    tmp |= (x << 8) & 0xFF00;
+    return tmp;
 }
