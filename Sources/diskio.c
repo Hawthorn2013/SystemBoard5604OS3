@@ -254,7 +254,7 @@ DRESULT disk_ioctl (
 		// Process of the command for the MMC/SD card
 	    if (CTRL_SYNC == cmd)
 	    {
-	        res = RES_PARERR;
+	        res = RES_OK;
 	    }
 	    else if (GET_SECTOR_COUNT == cmd)
 	    {

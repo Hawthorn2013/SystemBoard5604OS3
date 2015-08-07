@@ -1,13 +1,12 @@
-#include "includes.h"
+﻿#include "includes.h"
 
 
 
 FATFS fatfs_1;
 const TCHAR mmc[] = L"0:";
 FIL fil_1, fil_2;
-const TCHAR path[] = L"IAMCP.txt";
-const TCHAR path2[] = L"IAMCPhahahahaha.txt";
-const TCHAR test_line[] = L"Hi! I am CP!";
+const TCHAR path2[] = L"IAM陈鹏hahahahaha.txt";
+const char test_line[] = "Hi! I am 陈鹏!";
 UINT bw;
 FRESULT fr1;
 
