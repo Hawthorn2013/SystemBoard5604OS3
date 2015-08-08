@@ -52,13 +52,13 @@ typedef enum
 } OLED_RES;
 
 extern OS_STK TaskStk_OLED_Flush_Mem[];
+extern uint8_t OLED_Display_Memory_2[OLED_PAGE_MAX][OLED_SEG_MAX];
 
 extern OLED_RES Init_OLED(void);
 extern int Init_OLED_Pin(void);
 extern OLED_RES Fill_OLED_PAGE(int page, int seg_start, int seg_cnt, int pixel_appearance);
 extern void Task_OLED_Flush_Mem(void *p_arg);
 extern void Task_OLED_Flush_Mem(void *p_arg);
-extern void Test_OLED_Init(void);
 extern void Test_ASYNC_Send_Data(void);
 extern void Resume_Task_OLED_Flush_Mem(void);
 extern OLED_RES Flush_OLED_Mem(void);

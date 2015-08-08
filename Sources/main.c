@@ -12,7 +12,8 @@ FRESULT fr1;
 
  int main(void) {
 	volatile int i = 0;
-
+	uint8_t Font_Data[FONT_HEIGHT * FONT_WIDTH / 8];
+	
 	Init_ModesAndClock();
 	Init_LED();
 	Init_EMIOS_0();
@@ -23,25 +24,29 @@ FRESULT fr1;
     Init_UART_0_Ex();
     Init_DSPI_1();
         
-//    fr1 = f_mount(&fatfs_1, mmc, 1);
-//    Load_Font_File();
+    fr1 = f_mount(&fatfs_1, mmc, 1);
+    Load_Font_File();
     
-    while(1)
+    Init_OLED();
+    Fill_OLED_PAGE(0, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
+    Fill_OLED_PAGE(1, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
+    Fill_OLED_PAGE(2, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
+    Fill_OLED_PAGE(3, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
+    Fill_OLED_PAGE(4, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
+    Fill_OLED_PAGE(5, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
+    Fill_OLED_PAGE(6, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
+    Fill_OLED_PAGE(7, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
+    Flush_OLED_Mem();
+    
+    Get_Font_16x16(L'蛤', Font_Data);
+    for (i = 0; i < 16; i++)
     {
-        Init_OLED();
-        Fill_OLED_PAGE(0, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
-        Fill_OLED_PAGE(1, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
-        Fill_OLED_PAGE(2, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
-        Fill_OLED_PAGE(3, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
-        Fill_OLED_PAGE(4, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
-        Fill_OLED_PAGE(5, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
-        Fill_OLED_PAGE(6, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
-        Fill_OLED_PAGE(7, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
-        Flush_OLED_Mem();
+        OLED_Display_Memory_2[0][i] = Font_Data[i * 2 + 1];
+        OLED_Display_Memory_2[1][i] = Font_Data[i * 2];
     }
+    Flush_OLED_Mem();
         
     Enable_IRQ();
-    Test_OLED_Init();
     OSInit();
     Init_OSTickISR();
     Init_OLED();

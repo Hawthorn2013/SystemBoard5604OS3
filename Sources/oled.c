@@ -12,7 +12,7 @@
 OS_STK TaskStk_OLED_Flush_Mem[TASK_STK_SIZE_OLED_FLUSH_MEM-1];
 
 
-static uint8_t OLED_Display_Memory_2[OLED_PAGE_MAX][OLED_SEG_MAX];
+uint8_t OLED_Display_Memory_2[OLED_PAGE_MAX][OLED_SEG_MAX];
 
 typedef struct
 {
@@ -119,7 +119,7 @@ OLED_RES Flush_OLED_Mem(void)
      OLED_PIN_DC = OLED_DC_COMMAND;
      DSPI_SYNC_Send_and_Receive_Data(OLED_Dev_Data_1.DSPI_dev, cmd1, NULL, sizeof(cmd1));
      DSPI_SYNC_Send_and_Receive_Data(OLED_Dev_Data_1.DSPI_dev, cmd2, NULL, sizeof(cmd2));
-     OLED_PIN_DC = OLED_DC_COMMAND;
+     OLED_PIN_DC = OLED_DC_DATA;
      for (i = 0; i < sizeof(OLED_Display_Memory_2); i += DSPI_ASYNC_SEND_DATA_MAX_LENGTH)
      {
          DSPI_SYNC_Send_and_Receive_Data(OLED_Dev_Data_1.DSPI_dev, (uint8_t *)OLED_Display_Memory_2 + i, NULL, DSPI_ASYNC_SEND_DATA_MAX_LENGTH);
