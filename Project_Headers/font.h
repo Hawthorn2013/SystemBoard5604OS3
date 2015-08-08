@@ -15,8 +15,10 @@
 typedef enum
 {
     FONT_RES_OK = 0,
-    FONT_RES_ERR_READ_FILE
+    FONT_RES_ERR_READ_FILE,
+    FONT_RES_ERR_FONT_NOT_LOAD
 } FONT_RES;
 
 
-extern int Load_Font_File(void);
+extern FONT_RES Load_Font_File(void);
+FONT_RES Get_Font_16x16(TCHAR unicode, uint8_t *buff);

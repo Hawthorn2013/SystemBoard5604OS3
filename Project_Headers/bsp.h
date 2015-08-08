@@ -168,14 +168,24 @@
 #define DSPI_PUSHR_PCS_4                            (0b00010000)
 #define DSPI_PUSHR_PCS_5                            (0b00100000)
 #define DSPI_PUSHR_PCS_ALL                          (DSPI_PUSHR_PCS_0 | DSPI_PUSHR_PCS_1 | DSPI_PUSHR_PCS_2 | DSPI_PUSHR_PCS_3 | DSPI_PUSHR_PCS_4 | DSPI_PUSHR_PCS_5)
-#define DSPI_RES_OK                                 (0)
-#define DSPI_RES_BUS_BUSY                           (1)
+
+typedef enum
+{
+    DSPI_RES_OK = 0,
+    DSPI_RES_ERR,
+    DSPI_RES_BUS_BUSY
+} DSPI_RES;
+
+typedef enum
+{
+    DSPI_STATUS_IDEL = 0,
+    DSPI_STATUS_OPENED
+} DSPI_STATUS;
 
 extern struct DSPI_Device_Data
 {
-    uint32_t block[32];
     OS_EVENT *Mut_DSPI_1;
-    int status;
+    DSPI_STATUS status;
     void(*CB_TX_Complete)(void);
     union {
         uint32_t R;
@@ -318,8 +328,8 @@ extern void INTC_Handler_OSTickISR(void);
 */
 
 extern      int                 Init_DSPI_1(void);
-extern      int                 Open_DSPI_Dev(struct DSPI_Device_Data *dev);
-extern      int                 Close_DSPI(struct DSPI_Device_Data *dev);
+extern      DSPI_RES            Open_DSPI_Dev(struct DSPI_Device_Data *dev);
+extern      DSPI_RES            Close_DSPI(struct DSPI_Device_Data *dev);
 extern      int                 Set_DSPI_CTAR(struct DSPI_Device_Data *dev, int dbr, int cpol, int cpha,int lsbfe,int pcssck,int pasc,int pdt,int pbr,int cssck,int asc,int dt,int br);
 extern      int                 Set_DSPI_PUSHR(struct DSPI_Device_Data *dev, int cont, int pcs);
 extern      int                 Set_DSPI_Callback_TX_Complete(struct DSPI_Device_Data *dev, void(*fun)(void));

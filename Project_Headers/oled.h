@@ -39,18 +39,26 @@
 #define OLED_DSPI_CTAR_CSSCK                            (0b0111)
 #define OLED_DSPI_CTAR_ASC                              (0b0111)
 #define OLED_DSPI_CTAR_DT                               (0b0010)
-#define OLED_DSPI_CTAR_BR                               (0b0000)
+#define OLED_DSPI_CTAR_BR                               (0b0111)
 #define TASK_STK_SIZE_OLED_FLUSH_MEM                    (1024)
 #define TASK_PRIO_OLED_FLUSH_MEM                        (15)
 #define TASK_PRIO_MUTEX_OLED_DIS_MEM                    (3)
 
+typedef enum
+{
+    OLED_RES_OK = 0,
+    OLED_RES_BUS_BUSY,
+    OLED_RES_ERR_PAR
+} OLED_RES;
+
 extern OS_STK TaskStk_OLED_Flush_Mem[];
 
-extern int Init_OLED(void);
+extern OLED_RES Init_OLED(void);
 extern int Init_OLED_Pin(void);
-extern int Fill_OLED_PAGE(int page, int seg_start, int seg_cnt, int pixel_appearance);
+extern OLED_RES Fill_OLED_PAGE(int page, int seg_start, int seg_cnt, int pixel_appearance);
 extern void Task_OLED_Flush_Mem(void *p_arg);
 extern void Task_OLED_Flush_Mem(void *p_arg);
 extern void Test_OLED_Init(void);
 extern void Test_ASYNC_Send_Data(void);
 extern void Resume_Task_OLED_Flush_Mem(void);
+extern OLED_RES Flush_OLED_Mem(void);

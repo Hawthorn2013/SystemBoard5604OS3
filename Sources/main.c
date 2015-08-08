@@ -23,9 +23,16 @@ FRESULT fr1;
     Init_UART_0_Ex();
     Init_DSPI_1();
         
-    fr1 = f_mount(&fatfs_1, mmc, 1);
-    Load_Font_File();
-    while(1) {}
+//    fr1 = f_mount(&fatfs_1, mmc, 1);
+//    Load_Font_File();
+    
+    while(1)
+    {
+        Init_OLED();
+        Fill_OLED_PAGE(0, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_VISIBLE);
+        Fill_OLED_PAGE(2, 0, OLED_SEG_MAX, OLED_PIXEL_APPEARANCE_INVISIBLE);
+        Flush_OLED_Mem();
+    }
         
     Enable_IRQ();
     Test_OLED_Init();

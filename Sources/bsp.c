@@ -754,21 +754,42 @@ static int Disable_INTC_DSPI_SR_RFDF(volatile struct DSPI_tag *dspi)
 }
 
 
-int Open_DSPI_Dev(struct DSPI_Device_Data *dev)
+DSPI_RES Open_DSPI_Dev(struct DSPI_Device_Data *dev)
 {
-    Disable_INTC_DSPI_SR_All(dev->dspi);
-    dev->dspi->SR.R         = 0x00000000;
-    dev->CB_TX_Complete     = NULL;
-    return DSPI_ERR_NONE;
+    OS_CPU_SR  cpu_sr = 0;
+    
+    OS_ENTER_CRITICAL();
+    if (DSPI_STATUS_IDEL == dev->status)
+    {
+        dev->status = DSPI_STATUS_OPENED;
+        OS_EXIT_CRITICAL();
+        Disable_INTC_DSPI_SR_All(dev->dspi);
+        dev->dspi->SR.R         = 0x00000000;
+        dev->CB_TX_Complete     = NULL;
+        return DSPI_RES_OK;
+    }
+    else
+    {
+        OS_EXIT_CRITICAL();
+        return DSPI_RES_BUS_BUSY;
+    }
 }
 
 
-int Close_DSPI(struct DSPI_Device_Data *dev)
+DSPI_RES Close_DSPI(struct DSPI_Device_Data *dev)
 {
-    Disable_INTC_DSPI_SR_All(dev->dspi);
-    dev->dspi->SR.R         = 0x00000000;
-    dev->CB_TX_Complete     = NULL;
-    return DSPI_ERR_NONE;
+    if (DSPI_STATUS_OPENED == dev->status)
+    {
+        Disable_INTC_DSPI_SR_All(dev->dspi);
+        dev->dspi->SR.R         = 0x00000000;
+        dev->CB_TX_Complete     = NULL;
+        dev->status = DSPI_STATUS_IDEL;
+        return DSPI_RES_OK;
+    }
+    else
+    {
+        return DSPI_RES_ERR;
+    }
 }
 
 

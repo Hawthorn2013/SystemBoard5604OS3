@@ -236,17 +236,20 @@ static int Set_DSPI_Device(struct DSPI_Device_Data *dspi)
 }
 
 
-SDCARD_STATUS Init_SDCard(void)
+SDCARD_RES Init_SDCard(void)
 {
     Set_DSPI_Device(&DSPI_1_Device_Data);
-    Open_DSPI_Dev(SDCard_Dev_Data_1.DSPI_dev);
+    if (DSPI_RES_OK != Open_DSPI_Dev(SDCard_Dev_Data_1.DSPI_dev))
+    {
+        return SDCARD_RES_ERR_BUS_UNREADY;
+    }
     Set_DSPI_CTAR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_CTAR_DBR, SDCARD_DSPI_CTAR_CPOL, SDCARD_DSPI_CTAR_CPHA, SDCARD_DSPI_CTAR_LSBFE, SDCARD_DSPI_CTAR_PCSSCK, SDCARD_DSPI_CTAR_PASC, SDCARD_DSPI_CTAR_PDT, SDCARD_DSPI_CTAR_PBR, SDCARD_DSPI_CTAR_CSSCK, SDCARD_DSPI_CTAR_ASC, SDCARD_DSPI_CTAR_DT, SDCARD_DSPI_CTAR_BR);
     Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     Reset_SDCard();
     Get_CSD();
     Get_SDCard_Size();
     Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
-    return SDCARD_STATUS_READY;
+    return SDCARD_RES_OK;
 }
 
 
@@ -440,12 +443,16 @@ static int Reset_SDCard(void)
 }
 
 
-int SDCard_Read_Single_Block(uint32_t sector, uint8_t buffer[])
+SDCARD_RES SDCard_Read_Single_Block(uint32_t sector, uint8_t buffer[])
 {
     R1 r1;
     int i = 0;
     uint8_t send[8] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
     
+    if (DSPI_RES_OK != Open_DSPI_Dev(SDCard_Dev_Data_1.DSPI_dev))
+    {
+        return SDCARD_RES_ERR_BUS_UNREADY;
+    }
     if (SDCARD_VERSION_2_STANDARD_CAPACITY == SDCard_Dev_Data_1.version)
     {
         Test_SDCard_Send_Cmd(SDCARD_CMD17, sector<<9, 0xFF, r1.R, sizeof(r1));
@@ -456,11 +463,13 @@ int SDCard_Read_Single_Block(uint32_t sector, uint8_t buffer[])
     }
     else
     {
-        return 1;
+        Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+        return SDCARD_RES_ERR_DISK_UNREADY;
     }
     if (0x00 != r1.R[0])
     {
-        return (int)r1.R[0];
+        Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+        return SDCARD_RES_ERR_DISK_ERR;
     }
     Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     while(1)
@@ -479,16 +488,21 @@ int SDCard_Read_Single_Block(uint32_t sector, uint8_t buffer[])
     }
     DSPI_SYNC_Send_and_Receive_Data(SDCard_Dev_Data_1.DSPI_dev, send, NULL, 2);
     Send_8_Clocks_withoout_CS();
-    return 0;
+    Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+    return SDCARD_RES_OK;
 }
 
 
-int SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt)
+SDCARD_RES SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt)
 {
     R1 r1;
     int i = 0, j = 0;
     uint8_t send[8] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
     
+    if (DSPI_RES_OK != Open_DSPI_Dev(SDCard_Dev_Data_1.DSPI_dev))
+    {
+        return SDCARD_RES_ERR_BUS_UNREADY;
+    }
     if (SDCARD_VERSION_2_STANDARD_CAPACITY == SDCard_Dev_Data_1.version)
     {
         Test_SDCard_Send_Cmd(SDCARD_CMD18, sector<<9, 0xFF, r1.R, sizeof(r1));
@@ -499,11 +513,13 @@ int SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE]
     }
     else
     {
-        return 1;
+        Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+        return SDCARD_RES_ERR_DISK_UNREADY;
     }
     if (0x00 != r1.R[0])
     {
-        return (int)r1.R[0];
+        Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+        return SDCARD_RES_ERR_DISK_ERR;
     }
     Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     
@@ -521,24 +537,28 @@ int SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE]
         }
         for (j = 0; j < SDCARD_SECTOR_SIZE / DSPI_ASYNC_SEND_DATA_MAX_LENGTH; j++)
         {
-            
             Rev_8_Bytes(&buffer[i][DSPI_ASYNC_SEND_DATA_MAX_LENGTH * j]);
         }
         DSPI_SYNC_Send_and_Receive_Data(SDCard_Dev_Data_1.DSPI_dev, send, NULL, 2);
     }
     Test_SDCard_Send_Cmd(SDCARD_CMD12, 0, 0xFF, r1.R, sizeof(r1));
     Send_8_Clocks_withoout_CS();
-    return 0;
+    Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+    return SDCARD_RES_OK;
 }
 
 
-int SDCard_Write_Single_Block(uint32_t sector, const uint8_t buffer[])
+SDCARD_RES SDCard_Write_Single_Block(uint32_t sector, const uint8_t buffer[])
 {
     R1 r1;
     int i = 0;
     uint8_t send[9] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE, };
     uint8_t res = 0x00;
     
+    if (DSPI_RES_OK != Open_DSPI_Dev(SDCard_Dev_Data_1.DSPI_dev))
+    {
+        return SDCARD_RES_ERR_BUS_UNREADY;
+    }
     if (SDCARD_VERSION_2_STANDARD_CAPACITY == SDCard_Dev_Data_1.version)
     {
         Test_SDCard_Send_Cmd(SDCARD_CMD24, sector<<9, 0xFF, r1.R, sizeof(r1));
@@ -549,11 +569,13 @@ int SDCard_Write_Single_Block(uint32_t sector, const uint8_t buffer[])
     }
     else
     {
-        return 1;
+        Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+        return SDCARD_RES_ERR_DISK_UNREADY;
     }
     if (0x00 != r1.R[0])
     {
-        return (int)r1.R[0];
+        Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+        return SDCARD_RES_ERR_DISK_ERR;
     }
     Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     DSPI_SYNC_Send_and_Receive_Data(SDCard_Dev_Data_1.DSPI_dev, send + 5, NULL, 4);
@@ -565,7 +587,7 @@ int SDCard_Write_Single_Block(uint32_t sector, const uint8_t buffer[])
     res = Rev_Byte();
     if ((res & 0b00011111) != 0b00000101)
     {
-        return SDCARD_ERR_WRITE_BLOCK_FAILED;
+        return SDCARD_RES_ERR_DISK_ERR;
     }
     while(1)
     {
@@ -578,17 +600,23 @@ int SDCard_Write_Single_Block(uint32_t sector, const uint8_t buffer[])
         }
     }
     Send_8_Clocks_withoout_CS();
-    return 0;
+    Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+    return SDCARD_RES_OK;
 }
 
 
-int SDCard_Write_Mult_Blocks(uint32_t sector, const uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt)
+SDCARD_RES SDCard_Write_Mult_Blocks(uint32_t sector, const uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt)
 {
     R1 r1;
     int i = 0, j = 0;
     uint8_t send[10] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFC, 0xFD};
     uint8_t res = 0x00;
     
+
+    if (DSPI_RES_OK != Open_DSPI_Dev(SDCard_Dev_Data_1.DSPI_dev))
+    {
+        return SDCARD_RES_ERR_BUS_UNREADY;
+    }
     if (SDCARD_VERSION_2_STANDARD_CAPACITY == SDCard_Dev_Data_1.version)
     {
         Test_SDCard_Send_Cmd(SDCARD_CMD25, sector<<9, 0xFF, r1.R, sizeof(r1));
@@ -599,11 +627,13 @@ int SDCard_Write_Mult_Blocks(uint32_t sector, const uint8_t buffer[][SDCARD_SECT
     }
     else
     {
-        return 1;
+        Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+        return SDCARD_RES_ERR_DISK_UNREADY;
     }
     if (0x00 != r1.R[0])
     {
-        return (int)r1.R[0];
+        Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+        return SDCARD_RES_ERR_DISK_ERR;
     }
     Set_DSPI_PUSHR(SDCard_Dev_Data_1.DSPI_dev, SDCARD_DSPI_PUSHR_CONT, SDCARD_DSPI_PUSHR_PCS);
     DSPI_SYNC_Send_and_Receive_Data(SDCard_Dev_Data_1.DSPI_dev, send, NULL, 3);
@@ -618,6 +648,7 @@ int SDCard_Write_Mult_Blocks(uint32_t sector, const uint8_t buffer[][SDCARD_SECT
         res = Rev_Byte();
         if ((res & 0b00011111) != 0b00000101)
         {
+            Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
             return SDCARD_ERR_WRITE_BLOCK_FAILED;
         }
         while(1)
@@ -643,7 +674,8 @@ int SDCard_Write_Mult_Blocks(uint32_t sector, const uint8_t buffer[][SDCARD_SECT
         }
     }
     Send_8_Clocks_withoout_CS();
-    return 0;
+    Close_DSPI(SDCard_Dev_Data_1.DSPI_dev);
+    return SDCARD_RES_OK;
 }
 
 

@@ -76,7 +76,7 @@ DSTATUS disk_initialize (
 
 	case MMC :
 	    result = Init_SDCard();
-	    if (SDCARD_STATUS_READY == result)
+	    if (SDCARD_RES_OK == result)
 	    {
 	        stat = RES_OK;
 	    }
@@ -129,6 +129,10 @@ DRESULT disk_read (
 	        {
 	            res = RES_OK;
 	        }
+	        else
+	        {
+	            res = RES_ERROR;
+	        }
 	    }
 	    else if (1 == count)
 	    {
@@ -136,6 +140,10 @@ DRESULT disk_read (
             if (SDCARD_RES_OK == result)
             {
                 res = RES_OK;
+            }
+            else
+            {
+                res = RES_ERROR;
             }
 	    }
 	    else
@@ -197,6 +205,10 @@ DRESULT disk_write (
             {
                 res = RES_OK;
             }
+            else
+            {
+                res = RES_ERROR;
+            }
         }
         else if (1 == count)
         {
@@ -204,6 +216,10 @@ DRESULT disk_write (
             if (SDCARD_RES_OK == result)
             {
                 res = RES_OK;
+            }
+            else
+            {
+                res = RES_ERROR;
             }
         }
         else

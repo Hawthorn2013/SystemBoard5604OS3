@@ -12,6 +12,7 @@
 
 const static TCHAR Font_File_Path[] = L"方正像素16_U16.bin";
 static uint8_t Font_Data[FONT_DATA_BUFF_LENGTH][FONT_HEIGHT * FONT_WIDTH / 8];
+const TCHAR load_list[FONT_DATA_BUFF_LENGTH + 1] = L"估计陈鹏智能车电压流环川叶反馈蛤";
 
 
 typedef struct
@@ -43,7 +44,23 @@ static uint32_t __bswap_32(uint32_t x);
 static uint16_t __bswap_16(uint16_t x);
 
 
-int Load_Font_File(void)
+FONT_RES Get_Font_16x16(TCHAR unicode, uint8_t *buff)
+{
+    int i;
+    
+    for(i = 0; i < sizeof(load_list)/sizeof(TCHAR); i++)
+    {
+        if (load_list[i] == unicode)
+        {
+            memcpy(buff, Font_Data[i], FONT_HEIGHT * FONT_WIDTH / 8);
+            return FONT_RES_OK;
+        }
+    }
+    return FONT_RES_ERR_FONT_NOT_LOAD;
+}
+
+
+FONT_RES Load_Font_File(void)
 {
     FIL fil1;
     UINT br1;
@@ -52,7 +69,6 @@ int Load_Font_File(void)
     tagFlSectionInfo tagFlSectionInfo1;
     tagUflCharInfo tagUflCharInfo1;
     const char font_mark[] = "UFL";
-    const TCHAR load_list[] = L"估E一陈鹏智能车十";
     uint32_t tmp = 0x00000000;
     int i;
     

@@ -31,14 +31,16 @@ typedef enum
 typedef enum
 {
     SDCARD_RES_OK = 0,
-    SDCARD_RES_ERR_DISK_UNREADY
+    SDCARD_RES_ERR_DISK_UNREADY,
+    SDCARD_RES_ERR_DISK_ERR,
+    SDCARD_RES_ERR_BUS_UNREADY
 } SDCARD_RES;
 
-extern      SDCARD_STATUS       Init_SDCard(void);
-extern      int                 SDCard_Read_Single_Block(uint32_t sector, uint8_t btffer[]);
-extern      int                 SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt);
-extern      int                 SDCard_Write_Single_Block(uint32_t sector, const uint8_t buffer[]);
-extern      int                 SDCard_Write_Mult_Blocks(uint32_t sector, const uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt);
+extern      SDCARD_RES          Init_SDCard(void);
+extern      SDCARD_RES          SDCard_Read_Single_Block(uint32_t sector, uint8_t btffer[]);
+extern      SDCARD_RES          SDCard_Read_Mult_Block(uint32_t sector, uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt);
+extern      SDCARD_RES          SDCard_Write_Single_Block(uint32_t sector, const uint8_t buffer[]);
+extern      SDCARD_RES          SDCard_Write_Mult_Blocks(uint32_t sector, const uint8_t buffer[][SDCARD_SECTOR_SIZE], int block_cnt);
 extern      SDCARD_STATUS       Get_SDCard_Status(void);
 extern      SDCARD_RES          Get_SDCard_Sector_Count(uint32_t *cnt);
 extern      SDCARD_RES          Get_SDCard_Sector_Size(uint16_t *cnt);
